@@ -1,5 +1,9 @@
 :root {
-  --bubble-size: 30vw;
+  --bubble-size-one: 14cqi;
+  --bubble-size-two: 16cqi;
+  --bubble-size-three: 18cqi;
+  --bubble-size-four: 20cqi;
+  --bubble-size-five: 22cqi;
   --bubble-shift: 10deg;
 }
 
