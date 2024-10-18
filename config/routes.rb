@@ -1,9 +1,6 @@
 Rails.application.routes.draw do
   root "buckets#index"
 
-  resource :first_run
-  resource :session
-
   resource :account do
     scope module: :accounts do
       resource :join_code
@@ -11,15 +8,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :users do
-    scope module: :users do
-      resource :avatar
-    end
-  end
-
   resources :buckets do
-    resources :tags, only: :index
-
     scope module: :buckets do
       resources :views
     end
@@ -34,6 +23,17 @@ Rails.application.routes.draw do
       resources :boosts
       resources :comments
       resources :tags, shallow: true
+    end
+
+    resources :tags, only: :index
+  end
+
+  resource :first_run
+  resource :session
+
+  resources :users do
+    scope module: :users do
+      resource :avatar
     end
   end
 
