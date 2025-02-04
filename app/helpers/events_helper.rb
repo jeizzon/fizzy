@@ -58,7 +58,7 @@ module EventsHelper
     when "boosted"
       "Boosted by #{ event.creator.name }"
     when "commented"
-      "#{ event.creator.name } replied"
+      "#{ strip_tags(event.comment.body_html).blank? ? "#{ event.creator.name } replied." : "#{ event.creator.name }:" } #{ strip_tags(event.comment.body_html).truncate(200) }"
     when "published"
       "Added by #{ event.creator.name }"
     when "popped"

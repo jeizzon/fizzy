@@ -12,12 +12,14 @@
   <div class="bubble__shape flex-item-no-shrink txt-large"></div>
 
   <div class="flex flex-column min-width txt-small txt-tight-lines align-start txt-align-start">
-    <strong style="font-size: 1.1em;"><%= bubble.title %></strong>
-    <span class="flex align-center gap-half">
+    <strong style="font-size: 1.1em;" class="txt-break overflow-line-clamp">
+      <%= event.action == "commented" ? "RE: #{ bubble.title }" : bubble.title %>
+    </strong>
+    <span class="flex align-center gap-half flex-item-no-shrink">
       <% if event_column(event) == 1 %>
       <span><%= image_tag "#{event_action_icon(event)}.svg", aria: { hidden: true }, size: 12, class: "colorize--black" %></span>
       <% end %>
-      <span><%= event_action_sentence(event) %></span>
+      <span class="txt-break overflow-line-clamp" style="--lines: 3;"><%= event_action_sentence(event) %></span>
     </span>
     <span class="translucent"><%= bubble.bucket.name %></span>
   </div>

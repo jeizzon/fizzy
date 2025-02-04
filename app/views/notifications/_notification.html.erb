@@ -7,6 +7,11 @@
 
       <div class="flex flex-column txt-tight-lines min-width flex-item-grow">
         <strong class="overflow-ellipsis"><%= notification_title(notification) %></strong>
+        <% if notification.event.action == "commented" %>
+          <div class="txt-break overflow-line-clamp">
+            <%= strip_tags(notification.event.comment.body_html).truncate(200) %>
+          </div>
+        <% end %>
         <div class="overflow-ellipsis translucent"><%= notification_body(notification) %> · <%= notification.bubble.bucket.name %> · <%= local_datetime_tag(notification.created_at, style: :ago) %></div>
       </div>
 

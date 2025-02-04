@@ -37,6 +37,7 @@
 .txt-tight-lines { line-height: 1.2; }
 .txt-normal { font-weight: 400; font-style: normal; }
 .txt-nowrap { white-space: nowrap; }
+.txt-break { word-break: break-word; }
 .txt-uppercase { text-transform: uppercase; }
 
 /* Flexbox and Grid */
