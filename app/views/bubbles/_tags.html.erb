@@ -1,13 +1,22 @@
-<div class="card__tags flex align-center flex-item-grow">
-  <% if bubble.tags.any? || bubble.creating? %>
-    <span># </span>
-    <% bubble.tags.each_with_index do |tag, index| %>
-      <%= link_to bubbles_path(bucket_ids: [ bubble.bucket ], tag_ids: [ tag.id ]),
-            class: "card__tag btn btn--plain min-width txt-uppercase fill-transparent", data: { turbo_frame: "_top" } do %>
-        <span class="overflow-ellipsis"><%= tag.title %></span>
-      <% end %><%= ", " unless index == bubble.tags.size - 1 %>
+<%= turbo_frame_tag bubble, :tags do %>
+  <div class="card__tags flex align-center flex-item-grow">
+    <% if bubble.tags.any? || bubble.creating? %>
+      <span># </span>
+      <% bubble.tags.each_with_index do |tag, index| %>
+        <%= link_to bubbles_path(bucket_ids: [ bubble.bucket ], tag_ids: [ tag.id ]),
+                    class: "card__tag btn btn--plain min-width txt-uppercase fill-transparent", data: { turbo_frame: "_top" } do %>
+          <span class="overflow-ellipsis"><%= tag.title %></span>
+        <% end %><%= ", " unless index == bubble.tags.size - 1 %>
+      <% end %>
     <% end %>
-  <% end %>
 
-  <%= render "bubbles/sidebar/tag", bubble: bubble, tags: Current.account.tags %>
-</div>
+    <div class="position-relative" data-controller="dialog" data-action="keydown.esc->dialog#close click@document->dialog#closeOnClickOutside">
+      <button class="tag-picker__button btn card__hide-on-index <%= bubble.creating? || bubble.drafted? ? "fill-highlight" : "fill-transparent" %>" data-action="click->dialog#open:stop">
+        <%= image_tag "tag.svg", aria: { hidden: true }, size: 24 %>
+        <span class="for-screen-reader">Add a tag</span>
+      </button>
+
+      <%= turbo_frame_tag bubble, :tag, src: new_bucket_bubble_tagging_toggle_path(bubble.bucket, bubble) %>
+    </div>
+  </div>
+<% end %>

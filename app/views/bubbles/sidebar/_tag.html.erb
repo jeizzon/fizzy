@@ -1,34 +1,31 @@
-<div class="position-relative" data-controller="dialog" data-action="keydown.esc->dialog#close click@document->dialog#closeOnClickOutside">
-  <button class="tag-picker__button btn card__hide-on-index <%= bubble.creating? || bubble.drafted? ? "fill-highlight" : "fill-transparent" %>" data-action="click->dialog#open:stop">
-    <%= image_tag "tag.svg", aria: { hidden: true }, size: 24 %>
-    <span class="for-screen-reader">Add a tag</span>
-  </button>
+<% cache [ bubble, Current.account ] do %>
+  <%= turbo_frame_tag bubble, :tag do %>
+    <dialog class="popup panel flex-column align-start justify-start fill-white shadow" data-dialog-target="dialog">
+      <strong class="popup__title margin-block-half pad-inline-half">Tag this…</strong>
 
-  <dialog class="popup panel flex-column align-start justify-start fill-white shadow" data-dialog-target="dialog">
-    <strong class="popup__title margin-block-half pad-inline-half">Tag this…</strong>
-
-    <%= form_with url: bucket_bubble_tagging_toggles_path(bubble.bucket, bubble), class: "flex gap-half align-center full-width pad-inline-half margin-block-end" do |form| %>
-      <%= form.text_field :tag_title, placeholder: "New tag name...", class: "input txt-small full-width" %>
-      <%= form.button "Add a tag…", type: "submit", class: "btn txt-small" do %>
-        <%= image_tag "add.svg", aria: { hidden: true }, size: 24 %>
-        <span class="for-screen-reader">Add a tag</span>
+      <%= form_with url: bucket_bubble_tagging_toggles_path(bubble.bucket, bubble), class: "flex gap-half align-center full-width pad-inline-half margin-block-end" do |form| %>
+        <%= form.text_field :tag_title, placeholder: "New tag name...", class: "input txt-small full-width" %>
+        <%= form.button "Add a tag…", type: "submit", class: "btn txt-small" do %>
+          <%= image_tag "add.svg", aria: { hidden: true }, size: 24 %>
+          <span class="for-screen-reader">Add a tag</span>
+        <% end %>
       <% end %>
-    <% end %>
 
-    <%= form_with url: bucket_bubble_tagging_toggles_path(bubble.bucket, bubble), class: "flex flex-column full-width popup__list", data: { controller: "form" } do |form| %>
-      <% tags.sort_by { |tag| tag.hashtag.downcase }.each do |tag| %>
-        <div class="btn popup__item">
-          <%= form.check_box "tag_id[]", { 
-            checked: bubble.tagged_with?(tag),
-            data: { action: "change->form#submit" },
-            id: dom_id(tag, :tag),
-            include_hidden: false,
-          }, tag.id %>
+      <%= form_with url: bucket_bubble_tagging_toggles_path(bubble.bucket, bubble), class: "flex flex-column full-width popup__list", data: { controller: "form" } do |form| %>
+        <% tags.sort_by { |tag| tag.hashtag.downcase }.each do |tag| %>
+          <div class="btn popup__item">
+            <%= form.check_box "tag_id[]", {
+              checked: bubble.tagged_with?(tag),
+              data: { action: "change->form#submit" },
+              id: dom_id(tag, :tag),
+              include_hidden: false,
+            }, tag.id %>
 
-          <%= form.label "tag_id[]", tag.hashtag, for: dom_id(tag, :tag), class: "overflow-ellipsis" %>
-          <%= image_tag "check.svg", aria: { hidden: true }, size: 18, class: "checked flex-item-justify-end" %>
-        </div>
+            <%= form.label "tag_id[]", tag.hashtag, for: dom_id(tag, :tag), class: "overflow-ellipsis" %>
+            <%= image_tag "check.svg", aria: { hidden: true }, size: 18, class: "checked flex-item-justify-end" %>
+          </div>
+        <% end %>
       <% end %>
-    <% end %>
-  </dialog>
-</div>
+    </dialog>
+  <% end %>
+<% end %>

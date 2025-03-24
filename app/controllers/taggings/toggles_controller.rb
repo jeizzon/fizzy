@@ -1,6 +1,10 @@
 class Taggings::TogglesController < ApplicationController
   include BubbleScoped, BucketScoped
 
+  def new
+    render partial: "bubbles/sidebar/tag", locals: { bubble: @bubble, tags: Current.account.tags }
+  end
+
   def create
     if params[:tag_title].present?
       sanitized_title = params[:tag_title].strip.gsub(/\A#/, "")
@@ -20,6 +24,14 @@ class Taggings::TogglesController < ApplicationController
       end
     end
 
-    redirect_to @bubble
+    @bubble.tags.reload
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace([ @bubble, :tags ],
+                                                  partial: "bubbles/tags",
+                                                  locals: { bubble: @bubble })
+      end
+    end
   end
 end
