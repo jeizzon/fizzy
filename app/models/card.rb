@@ -33,6 +33,6 @@ class Card < ApplicationRecord
 
   private
     def set_default_title
-      self.title = "Untitled" if published?
+      self.title = "Untitled" if title.blank?
     end
 end
