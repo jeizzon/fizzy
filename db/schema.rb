@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_05_07_095113) do
+ActiveRecord::Schema[8.1].define(version: 2025_05_10_034936) do
   create_table "accesses", force: :cascade do |t|
     t.integer "collection_id", null: false
     t.datetime "created_at", null: false
@@ -269,6 +269,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_05_07_095113) do
     t.index ["reacter_id"], name: "index_reactions_on_reacter_id"
   end
 
+# Could not dump table "search_embeddings_vector_chunks00" because of following StandardError
+#   Unknown type '' for column 'rowid'
+
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -291,6 +295,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_05_07_095113) do
     t.datetime "created_at", null: false
     t.string "title"
     t.datetime "updated_at", null: false
+    t.index ["title"], name: "index_tags_on_account_id_and_title", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -357,4 +362,5 @@ ActiveRecord::Schema[8.1].define(version: 2025_05_07_095113) do
   # Note that virtual tables may not work with other database engines. Be careful if changing database.
   create_virtual_table "cards_search_index", "fts5", ["title"]
   create_virtual_table "comments_search_index", "fts5", ["body"]
+  create_virtual_table "search_embeddings", "vec0", ["id INTEGER PRIMARY KEY", "record_type TEXT NOT NULL", "record_id INTEGER NOT NULL", "embedding FLOAT[1536] distance_metric=cosine"]
 end

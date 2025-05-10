@@ -811,6 +811,43 @@ columns:
     default_function:
     collation:
     comment:
+  search_embeddings_vector_chunks00:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: rowid
+    cast_type: !ruby/object:ActiveModel::Type::Value
+      precision:
+      scale:
+      limit:
+    sql_type_metadata: !ruby/object:ActiveRecord::ConnectionAdapters::SqlTypeMetadata
+      sql_type: ''
+      type:
+      limit:
+      precision:
+      scale:
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: vectors
+    cast_type: !ruby/object:ActiveModel::Type::Binary
+      precision:
+      scale:
+      limit:
+    sql_type_metadata: !ruby/object:ActiveRecord::ConnectionAdapters::SqlTypeMetadata
+      sql_type: BLOB
+      type: :binary
+      limit:
+      precision:
+      scale:
+    'null': false
+    default:
+    default_function:
+    collation:
+    comment:
   sessions:
   - *5
   - *6
@@ -968,6 +1005,7 @@ primary_keys:
   pins: id
   reactions: id
   schema_migrations: version
+  search_embeddings_vector_chunks00: rowid
   sessions: id
   taggings: id
   tags: id
@@ -1005,6 +1043,7 @@ data_sources:
   pins: true
   reactions: true
   schema_migrations: true
+  search_embeddings_vector_chunks00: true
   sessions: true
   taggings: true
   tags: true
@@ -1925,6 +1964,7 @@ indexes:
     comment:
     valid: true
   schema_migrations: []
+  search_embeddings_vector_chunks00: []
   sessions:
   - !ruby/object:ActiveRecord::ConnectionAdapters::IndexDefinition
     table: sessions
@@ -1976,7 +2016,23 @@ indexes:
     nulls_not_distinct:
     comment:
     valid: true
-  tags: []
+  tags:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::IndexDefinition
+    table: tags
+    name: index_tags_on_account_id_and_title
+    unique: true
+    columns:
+    - title
+    lengths: {}
+    orders: {}
+    opclasses: {}
+    where:
+    type:
+    using:
+    include:
+    nulls_not_distinct:
+    comment:
+    valid: true
   users:
   - !ruby/object:ActiveRecord::ConnectionAdapters::IndexDefinition
     table: users
@@ -2061,4 +2117,4 @@ indexes:
     comment:
     valid: true
   workflows: []
-version: 20250507095113
+version: 20250510034936

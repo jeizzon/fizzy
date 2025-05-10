@@ -33,6 +33,9 @@ gem "sentry-ruby"
 gem "sentry-rails"
 gem "rails_structured_logging", bc: "rails-structured-logging"
 
+gem "ruby_llm", git: "https://github.com/crmne/ruby_llm.git"
+gem 'sqlite-vec', '0.1.7.alpha.2'
+
 group :development, :test do
   gem "debug"
   gem "bundler-audit", require: false

@@ -45,4 +45,13 @@ module Card::Searchable
     def title_and_description
       [ title, description.to_plain_text ].join(" ")
     end
+
+    def search_embedding_content
+      <<~CONTENT
+        Title: #{title}
+        Description: #{description.to_plain_text}
+        Created by: #{creator.name}}
+        Assigned to: #{assignees.map(&:name).join(", ")}}
+      CONTENT
+    end
 end
