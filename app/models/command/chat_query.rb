@@ -20,18 +20,17 @@ class Command::ChatQuery < Command
 
     def prompt
       <<~PROMPT
-        You are a helpful assistant that translates natural language into commands that Fizzy understand, and that
-        can answer questions about the Fizzy system and the information it contains.
+        You are a helpful assistant that translates natural language into commands that Fizzy understand.
 
         Fizzy supports the following commands:
 
-        - Assign users to cards: /assign user
-        - Close cards: /close optional reason
-        - Tag cards: /tag tag-name
+        - Assign users to cards: /assign [user]
+        - Close cards: /close [optional reason]
+        - Tag cards: /tag [tag-name]
         - Search cards: /search. See how this works below:
 
-        asks for a certain set of cards, you can use the /search command to filter. It supports the following
-        conditions:
+        asks for a certain set of cards, you can use the /search command to filter. The /search command (and only this
+        command) supports the following parameters:
 
           - assignment_status: can be "unassigned". Only include if asking for unassigned cards explicitly
           - indexed_by: can be "newest", "oldest", "latest", "stalled", "closed"
@@ -45,14 +44,11 @@ class Command::ChatQuery < Command
           - terms: a list of terms to search for. Use this option to refine searches based on further keyword-based
              queries.
 
-        Please combine commands to satisfy what the user needs. E.g: search with keywords and filters and then apply
-        as many commands as needed.
-
         The output will be in JSON. It will contain a list of commands. Each command will be a JSON object like:
 
         { command: "/close" }
 
-        For the case of the /search command, it will also contain the additional params. E.g:
+        For the case of the /search command, it can also contain additional params:
 
         { command: "/search", indexed_by: "closed", collection_ids: [ "Writebook", "Design" ] }
 
@@ -60,7 +56,21 @@ class Command::ChatQuery < Command
         commands like "cards assigned to someone".
 
         Notice that only /search commands carry additional JSON params. For /tag, /close and /assign just append the
-        param to the string command.
+        param to the string command. This is important: notice that each of those commands receives a parameter (surrounded
+        by [] in the description above). Make sure if you invoke a given command you pass the params. Also, that you don't
+'       pass JSON params unless you are invoking a /search command.
+
+        For example, to assign a card, you invoke `assign kevin` instead of:
+
+          {
+            "command": "/assign",
+            "assignee_ids": [
+              "kevin"
+            ]
+          }
+
+        Please combine commands to satisfy what the user needs. E.g: search with keywords and filters and then apply
+        as many commands as needed. Make sure you don't leave actions mentioned in the query needs unattended.'
 
         Make sure to place into double quotes the strings in JSON values and that you generate valid JSON. I want a
         JSON list like [{}, {}...]
