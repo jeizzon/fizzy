@@ -63,8 +63,6 @@ class Command::ChatQuery < Command
         the question. If there are relevant keywords to filter, pass those to /search but avoid passing generic ones. Then, reformulate
         pass the query itself VERBATIM to /insight as in "/insight <original query>", no additional keys in the JSON.
 
-        You can consider cards, issues and tickets as synonymous.
-
         For example, for "summarize performance issues", the JSON could be:
 
           [
