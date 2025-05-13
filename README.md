@@ -18,8 +18,8 @@ You'll be able to access the app in development at http://development-tenant.fiz
 
 ## Working with AI features
 
-To work on AI features you need the OpenAI API key stored in the development's credentials file. To decrypt the key,
-you need to create a file named `development.key` in `config/credentials`. You can copy the file from One Password in 
+To work on AI features you need the OpenAI API key stored in the development's credentials file. To decrypt the credentials,
+you need place the key in a file `config/credentials/development.key`. You can copy the file from One Password in 
 "Fizzy - development.key".
 
 To get semantic searches working for existing data you need to calculate all the vector embeds:
