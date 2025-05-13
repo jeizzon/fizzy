@@ -30,12 +30,10 @@ class Command::ChatQuery < Command
         - Assign users to cards: /assign [user]. E.g: "/assign kevin"
         - Close cards: /close [optional reason]. E.g: "/close" or "/close not now"
         - Tag cards: /tag [tag-name]. E.g: "/tag performance"
+        - Clear filters: /clear
         - Get insight about cards: /insight [query]. Use this as the default command to satisfy questions and requests
             about cards. This relies on /search. Example: "/insight summarize performance issues".
-        - Search cards based on certain keywords: /search. See how this works below. E.g: "/search meetup montreal". IMPORTANT: There can
-            only be one /search command in the response.
-
-        If you need to filter a certain set of cards, you can use the /search command to filter.
+        - Search cards based on certain keywords: /search. See how this works below.
 
         The /search command (and only this command) supports the following parameters:
 
@@ -59,9 +57,6 @@ class Command::ChatQuery < Command
 
         { command: "/search", indexed_by: "closed", collection_ids: [ "Writebook", "Design" ] }
 
-        Notice that there are similar commands to filter and act on cards (e.g: filter by assignee or assign cards). Favor
-        filtering/queries for commands like "cards assigned to someone".
-
         For example, to assign a card, you invoke `assign kevin`. For insight about "something", you invoke "/insight something".
 
         Important:
@@ -71,6 +66,8 @@ class Command::ChatQuery < Command
         pass the query itself VERBATIM to /insight as in "/insight <original query>", no additional keys in the JSON.
         - Only add an /insight command is there is a specific question about the data. Some requests are just about searching some
         cards. Those are fine.
+        - If there is not a clear request for insight of filtering, assume the user is asking for searching certain terms. Perform the
+        search excluding the generic ones. E.g: For "about workflows" search "workflows".
         - Sometimes, the current context is a given card or the set of cards in the screen. In that case, there is no need to add a
         /search command. Assume that's the case if it's missing any description of the the set of cards required. E.g: just "summarise"
         or "this card".
@@ -78,6 +75,8 @@ class Command::ChatQuery < Command
         - A response can only contain ONE /insight command AT MOST.
         - Unless asking for explicit filtering, always prefer /insight over /search. When asking about "cards" with properties that can
         be satisfied with /search, then use /search.
+        - There are similar commands to filter and act on cards (e.g: filter by assignee or assign cards). Favor filtering/queries
+        for commands like "cards assigned to someone".
 
 
         For example, for "summarize performance issues", the JSON could be:
@@ -137,7 +136,9 @@ class Command::ChatQuery < Command
     def response_command_lines_from(generated_commands)
       # We translate standalone /search commands as redirections to execute. Otherwise, they
       # will be excluded out from the commands to run, as they represent the context url.
-      if generated_commands.size == 1
+      #
+      # TODO: Tidy up this.
+      if generated_commands.size == 1 && generated_commands.find { it["command"] == "/search" }
         [ "/visit #{cards_path(**generated_commands.first.without("command"))}" ]
       else
         generated_commands.filter { it["command"] != "/search" }.collect { it["command"] }
