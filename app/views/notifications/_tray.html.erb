@@ -5,12 +5,8 @@
     data-action="keydown.esc->dialog#close:stop click@document->dialog#closeOnClickOutside">
   <%= turbo_frame_tag "notifications", src: tray_notifications_path, refresh: "morph" %>
 
-  <%= link_to notifications_path, class: "tray__overflow border-radius txt-normal", data: { action: "click->dialog#close" } do %>
-    <div class="notification__body border-radius shadow fill-white flex align-center txt-align-center gap full-width border txt-ink txt-small">
-      <div class="flex flex-column txt-tight-lines min-width flex-item-grow">
-        <strong>+ More…</strong>
-      </div>
-    </div>
+  <%= link_to notifications_path, class: "tray__overflow", data: { action: "click->dialog#close" } do %>
+    + More…
   <% end %>
 
   <div class="tray__actions">

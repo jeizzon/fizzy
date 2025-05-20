@@ -24,16 +24,18 @@
       --z: calc(6 - var(--position));
 
       display: flex;
-      inset: auto 0 0;
+      font-size: 10px;
       inline-size: var(--tray-size);
+      inset: auto 0 0;
       outline: 0;
       pointer-events: none;
-      position: absolute !important; /* tmp fix; ideally should remove the position-relative class from tray__item */
+      position: absolute; /* tmp fix; ideally should remove the position-relative class from tray__item */
       scale: var(--scale);
       transform: translateY(var(--offset));
       transform-origin: center;
       transition: scale 0.2s ease-out, transform 0.2s ease-out;
       z-index: var(--z);
+      container-type: inline-size;
 
       &:nth-child(1) { --position: 1; }
       &:nth-child(2) { --position: 2; }
@@ -55,6 +57,7 @@
       }
     }
   }
+
 
   .tray__actions {
     --hover-size: 0;
@@ -110,47 +113,79 @@
     }
   }
 
-  .tray__item-meta {
-    font-size: var(--text-x-small);
-    font-weight: 500;
-    opacity: 0.66;
-  }
-
   .tray__overflow {
-    --border-radius: 0.2em;
     --hover-size: 0;
     --offset: calc((var(--position) - 1) * (var(--block-space) * -1));
     --position: 7;
     --scale: calc(1 - var(--position) / 30);
     --z: calc(6 - var(--position));
 
+    background-color: var(--color-canvas);
+    /* background-color: tomato; */
     block-size: var(--height);
+    border-radius: 0.2em;
+    box-shadow: var(--shadow);
+    color: var(--color-ink);
     display: none;
-    inset: auto 0.1ch 0 auto;
+    font-size: var(--text-small);
+    font-weight: bold;
     inline-size: var(--tray-size);
+    inset: auto 0.1ch 0 auto;
+    opacity: 0;
+    place-content: center;
     pointer-events: none;
     position: absolute;
     scale: var(--scale);
     transform: translateY(var(--offset));
     transform-origin: center;
-    transition: scale 0.2s ease-out, transform 0.2s ease-out;
+    transition:
+      opacity 0.2s ease-out,
+      scale 0.2s ease-out,
+      transform 0.2s ease-out;
     z-index: var(--z);
 
     .tray:has(.tray__item:nth-child(7)) & {
-      display: flex;
+      display: grid;
     }
 
     .tray[open] & {
       --offset: calc((100% + var(--block-space-half)) * (var(--position) * -1));
       --scale: 1;
 
-      margin-block-end: calc(var(--block-space-half) * -1);
+      margin-block-end: calc(var(--block-space-half) * -2);
+      opacity: 1;
       pointer-events: unset;
     }
   }
 
   /* Notifications
   /* ------------------------------------------------------------------------ */
+
+  .tray {
+    .card {
+      --card-padding-block: 1.5ch;
+      --card-padding-inline: 1.5ch;
+      --text-xx-large: 2em;
+
+      view-transition-name: unset !important;
+    }
+
+    .card__collection {
+      padding-block: 0.25ch;
+    }
+
+    .card__body {
+      padding-block-end: 0;
+    }
+
+    .card__title {
+      --lines: 1;
+
+      font-size: var(--text-small);
+      font-weight: bold;
+      min-block-size: 0;
+    }
+  }
 
   .tray--notifications {
     inset: auto var(--inline-space) var(--block-space-half) auto;
@@ -164,6 +199,19 @@
         visibility: hidden;
       }
     }
+
+    .card__notification-unread-indicator {
+      --btn-icon-size: 1.25em;
+      --btn-size: 2em;
+    }
+
+    .card__notification-meta {
+      font-size: var(--text-x-small);
+    }
+
+    .card__timestamp {
+      display: none;
+    }
   }
 
   /* Pins
@@ -175,14 +223,10 @@
     .tray__item {
       --z: calc(10 - var(--position));
 
-      container-type: inline-size;
-      font-size: 10px;
-
       &:nth-child(7) { --position: 7; }
       &:nth-child(8) { --position: 8; }
       &:nth-child(9) { --position: 9; }
       &:nth-child(10) { --position: 10; }
-
       &:nth-child(1n + 11) { display: none; }
     }
 
@@ -195,37 +239,16 @@
       display: none;
     }
 
+    .card__body {
+      display: block;
+    }
+
     .card__meta-grid {
       margin-inline-start: 0;
     }
 
-    .card {
-      --block-space: 1em;
-      --block-space-half: 0.5em;
-      --text-xx-large: 2em;
-
-      view-transition-name: unset !important;
-    }
-
-    .card__collection {
-      padding-block: 0.25ch;
-    }
-
-    .card__body {
-      display: block;
-      padding-block-end: 0;
-    }
-
     .card__link {
       z-index: 1;
-    }
-
-    .card__title {
-      --lines: 1;
-
-      font-size: var(--text-small);
-      font-weight: bold;
-      min-block-size: 0;
     }
 
     .card__stages {

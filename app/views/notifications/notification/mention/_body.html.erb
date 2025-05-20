@@ -1,6 +1,6 @@
 <% mention = notification.source %>
 
-<strong class="overflow-ellipsis notification__title txt-small txt-tight-lines"><%= mention.mentioner.first_name %> mentioned you</strong>
-<div class="overflow-ellipsis txt-small txt-tight-lines">
+<strong class="card__title overflow-ellipsis"><%= mention.mentioner.first_name %> mentioned you</strong>
+<div class="card__notification-meta overflow-ellipsis">
   <%= mention.source.mentionable_content.truncate(200) %>
 </div>

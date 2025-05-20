@@ -1,163 +1,34 @@
 @layer components {
-
-  /* Notification
+  /* Notifications list
   /* ------------------------------------------------------------------------ */
 
-  .notification {
-    --avatar-size: 2lh;
-    --card-color: var(--color-card-default);
-    --notification-border-color: transparent;
-    --notification-padding-block: 0.75em;
-    --notification-padding-inline: 0.5em;
-
-    align-items: center;
-    background-color: var(--color-canvas);
-    border: 1px solid var(--color-ink-lighter);
-    border-radius: 0.2em;
-    box-shadow: var(--shadow);
-    color: var(--color-ink);
-    display: block;
-    font-size: var(--text-normal);
-    inline-size: 100%;
-    max-inline-size: 100%;
-    padding: var(--notification-padding-block) var(--notification-padding-inline);
-    position: relative;
-    text-align: start;
-
-    .tray & {
-      border: none;
+  .notifications-list {
+    .tray__item {
+      position: relative;
     }
 
-    @media (prefers-color-scheme: dark) {
-      --notification-border-color: var(--color-ink-medium);
-    }
-
-    .notificiations-list--read & {
-      --notification-border-color: var(--color-ink-lighter);
-
-      box-shadow: none !important;
-    }
-  }
-
-  .notification__header {
-    align-items: center;
-    display: flex;
-    gap: 0.5ch;
-    margin-block-end: 1ch;
-    margin-block-start: calc(-1 * var(--notification-padding-block));
-    margin-inline-start: calc(-1 * var(--notification-padding-inline));
-    min-inline-size: 0;
-  }
-
-  .notification__collection {
-    background-color: var(--card-color);
-    border-radius: 0.2em 0 0.2em 0;
-    color: var(--color-ink-inverted);
-    font-size: 0.6em;
-    font-weight: 800;
-    inline-size: fit-content;
-    padding: 0.25ch var(--inline-space) 0.25ch var(--inline-space-double);
-    text-transform: uppercase;
-
-    .tray & {
-      font-size: 10px;
-    }
-  }
-
-  .notification__id {
-    display: inline-flex;
-    margin-inline-start: calc(var(--inline-space) * -1);
-  }
-
-  .notification__collection-name {
-    border-inline-start: 1px solid color-mix(in srgb, var(--color-ink-inverted) 33%, var(--card-color));
-    color: currentcolor;
-    display: inline-flex;
-    margin-inline-start: var(--inline-space-half);
-    padding-inline-start: calc(var(--inline-space) * 0.75);
-  }
-
-  .notification__time {
-    opacity: 0.66;
-
-    .tray & {
-      display: none;
-    }
-  }
-
-  .notification__body {
-    align-items: center;
-    display: flex;
-    flex-grow: 1;
-    gap: var(--inline-space-half);
-  }
-
-  .notification__title {
-    padding-inline-end: calc(var(--inline-space-half) + 1.2em);
-  }
-
-  .notification__unread_indicator {
-    --btn-background: var(--color-canvas);
-    --btn-border-color: var(--color-canvas);
-    --btn-icon-size: 0.7em;
-    --btn-padding: 0;
-    --btn-size: 1.75em;
-    --hover-size: 0;
-
-    inset: 0 0 auto auto;
-    position: absolute;
-
-    &:before,
-    .icon {
-      transition: opacity 150ms ease;
-    }
-
-    /* The red dot */
-    &:before {
-      aspect-ratio: 1;
-      background-color: var(--color-marker);
-      border-radius: 50%;
-      content: "";
-      inline-size: 0.55em;
-      inset: 50% auto auto 50%;
-      position: absolute;
-      translate: -50% -50%;
-    }
-
-    .icon {
-      opacity: 0;
-    }
-
-    @media (hover: hover) {
-      &:hover {
-        --btn-background: transparent;
-
-        &:before {
-          opacity: 0;
-        }
-
-        .icon {
-          opacity: 1;
-        }
+    &:has(.card--notification) {
+      .notifications-list__empty-message {
+        display: none;
       }
     }
+  }
 
-    .notificiations-list--read & {
+  /* Read items
+  /* ------------------------------------------------------------------------ */
+
+  .notifications-list--read {
+    &:not(:has(.card--notification)) {
+      display: none;
+    }
+
+    .card {
+      box-shadow: 0 0 0 1px var(--color-ink-lighter);
+    }
+
+    .card__notification-unread-indicator {
       display: none;
     }
   }
 }
 
-.notifications__empty-message {
-  .notificiations-list:has(.notification) & {
-    display: none;
-  }
-}
-
-.notificiations-list--read {
-  display: none;
-
-  &:has(.notification) {
-    display: flex;
-  }
-}

@@ -19,7 +19,7 @@
         <%= render "cards/display/perma/tags", card: card %>
       </header>
 
-      <div class="card__body flex gap full-width flex-item-grow justify-space-between">
+      <div class="card__body justify-space-between">
         <%= render "cards/container/title", card: card %>
         <%= render "cards/stagings/stages", card: card if card.doing? %>
       </div>

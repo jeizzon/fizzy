@@ -5,7 +5,7 @@
 
   <% if collection = filter.single_collection || (Current.user.collections.first if Current.user.collections.one?) %>
     <%= button_to collection_cards_path(collection), method: :post, class: "card card--new-card-button btn", form_class: "full-width" do %>
-      <div class="card__body flex align-center gap-half txt-xx-large margin-block-half">
+      <div class="card__body align-center txt-xx-large margin-block-half">
         <%= icon_tag "add" %>
         <span>Add a new card</span>
       </div>

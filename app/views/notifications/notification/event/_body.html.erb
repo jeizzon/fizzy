@@ -1,6 +1,9 @@
 <% event = notification.source %>
 
-<strong class="overflow-ellipsis notification__title txt-small txt-tight-lines"><%= event_notification_title(event) %></strong>
-<div class="overflow-ellipsis txt-small txt-tight-lines">
-  <%= event_notification_body(event) %>
+<div class="card__title overflow-ellipsis">
+  <%= event_notification_title(event) %>
+</div>
+
+<div class="card__notification-meta overflow-ellipsis">
+  <%= event_notification_body(event) %> <span class="card__timestamp">• <%= local_datetime_tag(notification.created_at, style: :ago) %></span>
 </div>
