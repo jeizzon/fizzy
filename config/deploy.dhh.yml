@@ -41,7 +41,7 @@ accessories:
   beamer-replica:
     <<: *beamer-accessory
     service: beamer-replica
-    cmd: beamer replica --primary=http://cph-app-101:5000/ --dir=/storage
+    cmd: beamer replica --primary=http://cph-mf4-app-201:5000/ --dir=/storage
     roles:
       - web-replica
 
