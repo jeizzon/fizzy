@@ -159,6 +159,10 @@ lexical-toolbar {
   [aria-selected] {
     border: 1px solid red;
   }
+
+  .lexical-prompt-menu__item {
+    cursor: pointer;
+  }
 }
 
 .attachment--custom.node--selected {
