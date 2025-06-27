@@ -24,6 +24,8 @@ class Card < ApplicationRecord
     when "oldest"  then chronologically
     when "latest"  then latest
     when "stalled" then stalled.chronologically
+    when "closing_soon" then closing_soon.chronologically
+    when "falling_back_soon" then falling_back_soon.chronologically
     when "closed"  then closed
     end
   end

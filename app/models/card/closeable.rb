@@ -8,6 +8,7 @@ module Card::Closeable
     scope :open, -> { where.missing(:closure) }
 
     scope :recently_closed_first, -> { closed.order("closures.created_at": :desc) }
+    scope :closed_at_window, ->(window) { closed.where("closures.created_at": window) }
   end
 
   def closed?

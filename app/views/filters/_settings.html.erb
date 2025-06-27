@@ -18,10 +18,12 @@
     <%= render "filters/tags", filter: filter %>
     <%= render "filters/assignees", filter: filter %>
     <%= render "filters/creators", filter: filter %>
+    <%= render "filters/time_window", filter: filter, name: :creation, label: "Created" %>
+    <%= render "filters/time_window", filter: filter, name: :closure, label: "Closed" %>
     <%# FIXME LATER: this needs to be able to allow selection of unique stages across all active workflows %>
     <%#= render "filters/stages", filter: filter %>
     <%= render "filters/cards", filter: filter %>
-    
+
 
     <% filter.terms.each do |term| %>
       <%= filter_chip_tag %Q("#{term}"), filter.as_params_without(:terms, term) %>

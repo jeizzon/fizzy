@@ -133,4 +133,24 @@ class FilterTest < ActiveSupport::TestCase
     assert filter.indexed_by.closed?
     assert_equal [ "haggis" ], filter.terms
   end
+
+  test "creation window" do
+    filter = users(:david).filters.new creation: "this week"
+
+    cards(:logo).update_columns created_at: 2.weeks.ago
+    assert_not_includes filter.cards, cards(:logo)
+
+    cards(:logo).update_columns created_at: Time.current
+    assert_includes filter.cards, cards(:logo)
+  end
+
+  test "closure window" do
+    filter = users(:david).filters.new closure: "this week"
+
+    cards(:shipping).closure.update_columns created_at: 2.weeks.ago
+    assert_not_includes filter.cards, cards(:shipping)
+
+    cards(:shipping).closure.update_columns created_at: Time.current
+    assert_includes filter.cards, cards(:shipping)
+  end
 end

@@ -20,7 +20,7 @@ class Filter < ApplicationRecord
     @cards ||= begin
       result = creator.accessible_cards.indexed_by(indexed_by)
       result = result.where(id: card_ids) if card_ids.present?
-      result = result.open unless indexed_by.closed? || card_ids.present?
+      result = result.open unless indexed_by.closed? || closure_window || card_ids.present?
       result = result.by_engagement_status(engagement_status) if engagement_status.present?
       result = result.unassigned if assignment_status.unassigned?
       result = result.assigned_to(assignees.ids) if assignees.present?
@@ -28,6 +28,8 @@ class Filter < ApplicationRecord
       result = result.where(collection: collections.ids) if collections.present?
       result = result.in_stage(stages.ids) if stages.present?
       result = result.tagged_with(tags.ids) if tags.present?
+      result = result.where("cards.created_at": creation_window) if creation_window
+      result = result.closed_at_window(closure_window) if closure_window
       result = terms.reduce(result) do |result, term|
         result.mentioning(term)
       end

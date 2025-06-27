@@ -1,7 +1,7 @@
 module Filter::Fields
   extend ActiveSupport::Concern
 
-  INDEXES = %w[ newest oldest latest stalled ]
+  INDEXES = %w[ newest oldest latest stalled closing_soon falling_back_soon ]
 
   delegate :default_value?, to: :class
 
@@ -16,7 +16,8 @@ module Filter::Fields
   end
 
   included do
-    store_accessor :fields, :assignment_status, :indexed_by, :terms, :engagement_status, :card_ids
+    store_accessor :fields, :assignment_status, :indexed_by, :terms,
+      :engagement_status, :card_ids, :creation, :closure
 
     def assignment_status
       super.to_s.inquiry
@@ -28,6 +29,14 @@ module Filter::Fields
 
     def engagement_status
       super&.inquiry
+    end
+
+    def creation_window
+      TimeWindowParser.parse(creation)
+    end
+
+    def closure_window
+      TimeWindowParser.parse(closure)
     end
 
     def terms

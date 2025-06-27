@@ -5,6 +5,8 @@ module Filter::Params
     :assignment_status,
     :indexed_by,
     :engagement_status,
+    :creation,
+    :closure,
     card_ids: [],
     assignee_ids: [],
     creator_ids: [],
@@ -38,6 +40,8 @@ module Filter::Params
     {}.tap do |params|
       params[:indexed_by]        = indexed_by
       params[:engagement_status] = engagement_status
+      params[:creation]          = creation
+      params[:closure]           = closure
       params[:assignment_status] = assignment_status
       params[:terms]             = terms
       params[:tag_ids]           = tags.ids

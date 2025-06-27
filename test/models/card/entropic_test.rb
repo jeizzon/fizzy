@@ -70,6 +70,16 @@ class Card::EntropicTest < ActiveSupport::TestCase
     assert_not cards(:shipping).reload.closed?
   end
 
+  test "closing soon scope" do
+    cards(:logo, :shipping).each(&:published!).each(&:reconsider)
+
+    cards(:logo).update!(last_active_at: entropy_configurations(:writebook_collection).auto_close_period.seconds.ago + 2.days)
+    cards(:shipping).update!(last_active_at: entropy_configurations(:writebook_collection).auto_close_period.seconds.ago - 2.days)
+
+    assert_includes Card.closing_soon, cards(:logo)
+    assert_not_includes Card.closing_soon, cards(:shipping)
+  end
+
   test "auto consider all stagnated using the default account entropy configuration" do
     travel_to Time.current
 
@@ -103,5 +113,17 @@ class Card::EntropicTest < ActiveSupport::TestCase
     assert cards(:shipping).reload.doing?
     assert cards(:logo).reload.considering?
     assert_equal Time.current, cards(:logo).last_active_at
+  end
+
+  test "falling back scope" do
+    travel_to Time.current
+
+    cards(:logo, :shipping).each(&:engage)
+
+    cards(:logo).update!(last_active_at: 1.day.ago - entropy_configurations("writebook_collection").auto_close_period)
+    cards(:shipping).update!(last_active_at: 1.day.from_now - entropy_configurations("writebook_collection").auto_close_period)
+
+    assert_includes Card.falling_back_soon, cards(:shipping)
+    assert_not_includes Card.falling_back_soon, cards(:logo)
   end
 end
