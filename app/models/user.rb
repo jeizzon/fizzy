@@ -26,6 +26,11 @@ class User < ApplicationRecord
     update! active: false, email_address: deactived_email_address
   end
 
+  # TODO: Move to attachable along with the concern
+  def attachable_plain_text_representation(...)
+    "@#{first_name.downcase}"
+  end
+
   private
     def deactived_email_address
       email_address.sub(/@/, "-deactivated-#{SecureRandom.uuid}@")

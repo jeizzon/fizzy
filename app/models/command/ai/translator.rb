@@ -145,8 +145,10 @@ class Command::Ai::Translator
         * If cards are described as state ("assigned to X") and later an action ("assign X"), only the first is a filter.
         * ❗ Once you produce a valid context **or** command list, do not add a fallback /search.
 
-        -------------------- COMMAND INTERPRETATION RULES --------------------
+        ---------------------- RESOLVE COMMAND ARGUMENTS ----------------------
+        * A person can be express by its name or via a global ID URL like gid://fizzy/User/773524000?tenant=37signals.
 
+        -------------------- COMMAND INTERPRETATION RULES --------------------
         * /user <Name>           → open that person’s profile or activity feed.
           – Phrases like “visit user <Name>”, “view user <Name>”, “see <Name>’s profile” must map to **/user**, **never** to /visit.
         * /visit <url|path>      → open any other URL or internal path (cards, settings, etc.).

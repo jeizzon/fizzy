@@ -8,14 +8,24 @@ class Command::Parser
   end
 
   def parse(string)
-    parse_command(string).tap do |command|
+    parseable_command = as_plain_text_with_attachable_references(string)
+
+    parse_command(parseable_command).tap do |command|
       command.user = user
-      command.line ||= string
+      command.line ||= as_plain_text(string)
       command.context ||= context
     end
   end
 
   private
+    def as_plain_text_with_attachable_references(string)
+      ActionText::Content.new(string).render_attachments(&:to_gid).fragment.to_plain_text
+    end
+
+    def as_plain_text(string)
+      ActionText::Content.new(string).to_plain_text
+    end
+
     def parse_command(string)
       command_name, *command_arguments = string.strip.split(" ")
       combined_arguments = command_arguments.join(" ")
@@ -24,9 +34,9 @@ class Command::Parser
       when /^#/
         Command::FilterByTag.new(tag_title: tag_title_from(string), params: filter.as_params)
       when /^@/
-        Command::GoToUser.new(user_id: assignee_from(command_name)&.id)
+        Command::GoToUser.new(user_id: context.find_user(command_name)&.id)
       when "/user"
-        Command::GoToUser.new(user_id: assignee_from(combined_arguments)&.id)
+        Command::GoToUser.new(user_id: context.find_user(combined_arguments)&.id)
       when "/assign", "/assignto"
         Command::Assign.new(assignee_ids: assignees_from(command_arguments).collect(&:id), card_ids: cards.ids)
       when "/clear"
@@ -44,7 +54,7 @@ class Command::Parser
       when "/search"
         Command::Search.new(terms: combined_arguments)
       when "/stage"
-        Command::Stage.new(stage_id: stage_from(combined_arguments)&.id, card_ids: cards.ids)
+        Command::Stage.new(stage_id: context.find_workflow_stage(combined_arguments)&.id, card_ids: cards.ids)
       when "/visit"
         Command::VisitUrl.new(url: command_arguments.first)
       when "/tag"
@@ -57,29 +67,12 @@ class Command::Parser
   private
     def assignees_from(strings)
       Array(strings).filter_map do |string|
-        assignee_from(string)
-      end
-    end
-
-    # TODO: This is temporary as it can be ambiguous. We should inject the user ID in the command
-    #   under the hood instead, as determined by the user picker. E.g: @1234.
-    def assignee_from(string)
-      string_without_at = string.delete_prefix("@")
-      User.all.find { |user| user.mentionable_handles.include?(string_without_at.downcase) }
-    end
-
-    def stage_from(combined_arguments)
-      candidate_stages.find do |stage|
-        stage.name.downcase.include?(combined_arguments.downcase)
+        context.find_user(string)
       end
     end
 
     def guess_collection
       cards.first&.collection || Collection.first
-    end
-
-    def candidate_stages
-      Workflow::Stage.where(workflow_id: cards.joins(:collection).select("collections.workflow_id").distinct)
     end
 
     def tag_title_from(string)

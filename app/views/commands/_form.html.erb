@@ -17,7 +17,9 @@
           action: "keydown.enter->terminal#submitCommand keydown.up->toggle-class#add:prevent keydown.up->navigable-list#selectCurrentOrReset:stop terminal#hideError"
         },
         placeholder: platform.desktop? ? "Press #{ hotkey_label(["ctrl", "K"]) } to search or type commands…" : "Search or type commands…",
-        spellcheck: "false" %>
+        spellcheck: "false" do %>
+    <%= global_mentions_prompt %>
+  <% end %>
 
   <%=  hidden_field_tag "confirmed", nil, data: { terminal_target: "confirmation" } %>
 <% end %>

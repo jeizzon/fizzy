@@ -41,9 +41,9 @@ export default class extends Controller {
     this.#hideOutput()
   }
 
-  submitCommand() {
-    this.formTarget.requestSubmit()
-    this.#reset()
+  submitCommand({ target }) {
+    console.debug("Es", target);
+    this.#submitCommand()
   }
 
   handleKeyPress(event) {
@@ -183,7 +183,12 @@ export default class extends Controller {
     this.inputTarget.value = this.originalInputValue
     this.confirmationTarget.value = "confirmed"
     this.#hideOutput()
-    this.submitCommand()
+    this.#submitCommand()
+  }
+
+  #submitCommand() {
+    this.formTarget.requestSubmit()
+    this.#reset()
   }
 
   #showOutput(markdown) {
