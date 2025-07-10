@@ -194,12 +194,14 @@
     background-color: var(--tray-hat-bg);
     border-block-end: 1px solid var(--color-ink-lighter);
     border-radius: var(--tray-radius) var(--tray-radius) 0 0;
+    block-size: var(--tray-item-height);
     display: flex;
     opacity: 0;
+    padding: 0.5ch;
 
     .btn {
       --btn-background: var(--tray-hat-bg);
-      --btn-border-radius: 0;
+      --btn-border-radius: 0.5ch;
       --btn-padding: 1.25ch 0.5ch 1ch;
 
       block-size: 100%;
@@ -217,14 +219,6 @@
 
     > *:is(:first-child, :last-child) {
       inline-size: 128px;
-    }
-
-    .tray__notification-settings {
-      --btn-border-radius: var(--tray-radius) 0 0 0;
-    }
-
-    .tray__clear-notifications {
-      --btn-border-radius: 0 var(--tray-radius) 0 0;
     }
 
     .tray__dialog[open] & {
