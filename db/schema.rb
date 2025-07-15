@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_07_03_193928) do
+ActiveRecord::Schema[8.1].define(version: 2025_07_14_222221) do
   create_table "accesses", force: :cascade do |t|
     t.datetime "accessed_at"
     t.integer "collection_id", null: false
@@ -299,6 +299,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_07_03_193928) do
     t.index ["user_id"], name: "index_pins_on_user_id"
   end
 
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.string "auth_key"
+    t.datetime "created_at", null: false
+    t.string "endpoint"
+    t.string "p256dh_key"
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.integer "user_id", null: false
+    t.index ["endpoint", "p256dh_key", "auth_key"], name: "idx_on_endpoint_p256dh_key_auth_key_7553014576"
+    t.index ["endpoint"], name: "index_push_subscriptions_on_endpoint"
+    t.index ["user_agent"], name: "index_push_subscriptions_on_user_agent"
+    t.index ["user_id", "endpoint"], name: "index_push_subscriptions_on_user_id_and_endpoint", unique: true
+    t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
+  end
+
   create_table "reactions", force: :cascade do |t|
     t.integer "comment_id", null: false
     t.string "content", limit: 16, null: false
@@ -416,6 +431,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_07_03_193928) do
   add_foreign_key "notifications", "users", column: "creator_id"
   add_foreign_key "pins", "cards"
   add_foreign_key "pins", "users"
+  add_foreign_key "push_subscriptions", "users"
   add_foreign_key "search_queries", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "steps", "cards"

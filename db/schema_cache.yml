@@ -451,7 +451,7 @@ columns:
     default_function:
     collation:
     comment:
-  - &33 !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+  - &34 !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
     auto_increment:
     name: title
     cast_type: *7
@@ -532,11 +532,11 @@ columns:
   - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
     auto_increment:
     name: all_access
-    cast_type: &30 !ruby/object:ActiveModel::Type::Boolean
+    cast_type: &31 !ruby/object:ActiveModel::Type::Boolean
       precision:
       scale:
       limit:
-    sql_type_metadata: &31 !ruby/object:ActiveRecord::ConnectionAdapters::SqlTypeMetadata
+    sql_type_metadata: &32 !ruby/object:ActiveRecord::ConnectionAdapters::SqlTypeMetadata
       sql_type: boolean
       type: :boolean
       limit:
@@ -756,7 +756,7 @@ columns:
     comment:
   filters_tags:
   - *19
-  - &32 !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+  - &33 !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
     auto_increment:
     name: tag_id
     cast_type: *3
@@ -842,6 +842,51 @@ columns:
   - *5
   - *6
   - *9
+  - *25
+  push_subscriptions:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: auth_key
+    cast_type: *7
+    sql_type_metadata: *8
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
+  - *5
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: endpoint
+    cast_type: *7
+    sql_type_metadata: *8
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
+  - *6
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: p256dh_key
+    cast_type: *7
+    sql_type_metadata: *8
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
+  - *9
+  - &30 !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: user_agent
+    cast_type: *7
+    sql_type_metadata: *8
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
   - *25
   reactions:
   - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
@@ -941,24 +986,15 @@ columns:
     collation:
     comment:
   - *9
-  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
-    auto_increment:
-    name: user_agent
-    cast_type: *7
-    sql_type_metadata: *8
-    'null': true
-    default:
-    default_function:
-    collation:
-    comment:
+  - *30
   - *25
   steps:
   - *22
   - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
     auto_increment:
     name: completed
-    cast_type: *30
-    sql_type_metadata: *31
+    cast_type: *31
+    sql_type_metadata: *32
     'null': false
     default: false
     default_function:
@@ -981,19 +1017,19 @@ columns:
   - *22
   - *5
   - *6
-  - *32
+  - *33
   - *9
   tags:
   - *5
   - *6
-  - *33
+  - *34
   - *9
   users:
   - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
     auto_increment:
     name: active
-    cast_type: *30
-    sql_type_metadata: *31
+    cast_type: *31
+    sql_type_metadata: *32
     'null': false
     default: true
     default_function:
@@ -1052,8 +1088,8 @@ columns:
   - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
     auto_increment:
     name: watching
-    cast_type: *30
-    sql_type_metadata: *31
+    cast_type: *31
+    sql_type_metadata: *32
     'null': false
     default: true
     default_function:
@@ -1121,6 +1157,7 @@ primary_keys:
   mentions: id
   notifications: id
   pins: id
+  push_subscriptions: id
   reactions: id
   schema_migrations: version
   search_queries: id
@@ -1165,6 +1202,7 @@ data_sources:
   mentions: true
   notifications: true
   pins: true
+  push_subscriptions: true
   reactions: true
   schema_migrations: true
   search_queries: true
@@ -2244,6 +2282,90 @@ indexes:
     nulls_not_distinct:
     comment:
     valid: true
+  push_subscriptions:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::IndexDefinition
+    table: push_subscriptions
+    name: idx_on_endpoint_p256dh_key_auth_key_7553014576
+    unique: false
+    columns:
+    - endpoint
+    - p256dh_key
+    - auth_key
+    lengths: {}
+    orders: {}
+    opclasses: {}
+    where:
+    type:
+    using:
+    include:
+    nulls_not_distinct:
+    comment:
+    valid: true
+  - !ruby/object:ActiveRecord::ConnectionAdapters::IndexDefinition
+    table: push_subscriptions
+    name: index_push_subscriptions_on_endpoint
+    unique: false
+    columns:
+    - endpoint
+    lengths: {}
+    orders: {}
+    opclasses: {}
+    where:
+    type:
+    using:
+    include:
+    nulls_not_distinct:
+    comment:
+    valid: true
+  - !ruby/object:ActiveRecord::ConnectionAdapters::IndexDefinition
+    table: push_subscriptions
+    name: index_push_subscriptions_on_user_agent
+    unique: false
+    columns:
+    - user_agent
+    lengths: {}
+    orders: {}
+    opclasses: {}
+    where:
+    type:
+    using:
+    include:
+    nulls_not_distinct:
+    comment:
+    valid: true
+  - !ruby/object:ActiveRecord::ConnectionAdapters::IndexDefinition
+    table: push_subscriptions
+    name: index_push_subscriptions_on_user_id
+    unique: false
+    columns:
+    - user_id
+    lengths: {}
+    orders: {}
+    opclasses: {}
+    where:
+    type:
+    using:
+    include:
+    nulls_not_distinct:
+    comment:
+    valid: true
+  - !ruby/object:ActiveRecord::ConnectionAdapters::IndexDefinition
+    table: push_subscriptions
+    name: index_push_subscriptions_on_user_id_and_endpoint
+    unique: true
+    columns:
+    - user_id
+    - endpoint
+    lengths: {}
+    orders: {}
+    opclasses: {}
+    where:
+    type:
+    using:
+    include:
+    nulls_not_distinct:
+    comment:
+    valid: true
   reactions:
   - !ruby/object:ActiveRecord::ConnectionAdapters::IndexDefinition
     table: reactions
@@ -2516,4 +2638,4 @@ indexes:
     comment:
     valid: true
   workflows: []
-version: 20250703193928
+version: 20250714222221

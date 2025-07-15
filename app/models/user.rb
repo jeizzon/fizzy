@@ -17,6 +17,7 @@ class User < ApplicationRecord
   has_many :pins, dependent: :destroy
   has_many :pinned_cards, through: :pins, source: :card
   has_many :commands, dependent: :destroy
+  has_many :push_subscriptions, class_name: "Push::Subscription", dependent: :delete_all
 
   normalizes :email_address, with: ->(value) { value.strip.downcase }
 
