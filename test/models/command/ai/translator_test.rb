@@ -28,9 +28,10 @@ class Command::Ai::TranslatorTest < ActionDispatch::IntegrationTest
   test "filter by terms" do
     assert_command({ context: { terms: [ "backups" ] } }, "cards about backups")
     assert_command({ context: { terms: [ "cables" ] } }, "issues about cables")
-    assert_command({ context: { terms: [ "infrastructure" ] } }, " infrastructure bugs")
-    assert_command({ context: { terms: [ "infrastructure" ] } }, " bugs about infrastructure")
-    assert_command({ context: { terms: [ "infrastructure" ] } }, " infrastructure stuff")
+    assert_command({ context: { terms: [ "infrastructure" ] } }, "infrastructure bugs")
+    assert_command({ context: { terms: [ "infrastructure" ] } }, "bugs about infrastructure")
+    assert_command({ context: { terms: [ "infrastructure" ] } }, "infrastructure stuff")
+    assert_command({ context: { terms: [ "red cars" ] } }, "issues about red cars")
   end
 
   test "filter by tag" do
