@@ -1,4 +1,4 @@
-<section id="closed-cards" class="cards cards--closed">
+<section id="closed-cards" class="cards cards--closed pad-block">
   <% if page.used? %>
     <%= render partial: "cards/display/public_preview", collection: page.records, as: :card, cached: true %>
 
