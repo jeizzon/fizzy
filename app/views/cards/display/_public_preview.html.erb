@@ -1,33 +1,27 @@
 <% cache card.cache_invalidation_parts.for_preview do %>
   <%= card_article_tag card, class: "card" do %>
-    <div class="flex gap">
-      <div class="flex flex-column flex-item-grow">
-        <header class="card__header">
+    <div class="flex flex-column flex-item-grow max-inline-size">
+      <header class="card__header">
 
-          <div class="card__collection flex align-start">
-            <span class="card__id"><%= card.id %></span>
-            <span class="card__collection-name">
-              <span class="overflow-ellipsis"><%= card.collection.name %></span>
-            </span>
-          </div>
-
-          <%= render "cards/display/preview/tags", card: card %>
-        </header>
-
-        <div class="card__body justify-space-between">
-          <div class="card__content">
-            <h1 class="card__title overflow-line-clamp">
-              <%= card.title %>
-            </h1>
-
-            <%= link_to published_card_path(card), class: "card__link", title: card_title_tag(card) do %>
-              <span class="for-screen-reader"><%= card.title %></span>
-            <% end %>
-          </div>
+        <div class="card__collection flex align-start">
+          <span class="card__id"><%= card.id %></span>
+          <span class="card__collection-name">
+            <span class="overflow-ellipsis"><%= card.collection.name %></span>
+          </span>
         </div>
-      </div>
 
-      <%= render "cards/display/public_preview/stages", card: card if card.doing? %>
+        <%= render "cards/display/preview/tags", card: card %>
+      </header>
+
+      <div class="card__body justify-space-between">
+        <div class="card__content">
+          <h1 class="card__title overflow-line-clamp">
+            <%= card.title %>
+          </h1>
+        </div>
+
+        <%= render "cards/display/public_preview/stages", card: card if card.doing? %>
+      </div>
     </div>
 
     <footer class="card__footer">
@@ -35,6 +29,10 @@
     </footer>
 
     <%= render "cards/display/common/background", card: card %>
+
+    <%= link_to published_card_path(card), class: "card__link", title: card_title_tag(card) do %>
+      <span class="for-screen-reader"><%= card.title %></span>
+    <% end %>
 
     <% if card.entropic? %>
       <%= render "cards/display/preview/bubble", card: card %>
