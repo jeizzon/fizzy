@@ -1,5 +1,15 @@
 <%= form_with model: [collection, column], data: { controller: "form", action: "turbo:submit-end->dialog#close turbo:submit-end->form#reset" } do |form| %>
   <%= form.text_field :name, class: "input", placeholder: "Column name", value: column.name,
         required: true, autocomplete: "off", pattern: ".*\\S.*", title: "Column name cannot be blank" %>
+  <div class="flex flex-wrap gap-half justify-space-between margin-block-half">
+    <% Card::COLORS.each do |color| %>
+      <label class="btn btn--circle txt-small borderless" style="--btn-background: <%= color %>" title="<%= color %>">
+        <%= form.radio_button :color, color %>
+        <%= icon_tag "check", class: "checked" %>
+        <span class="for-screen-reader"><%= color %></span>
+      </label>
+    <% end %>
+  </div>
+
   <%= form.submit label, class: "btn btn--link" %>
 <% end %>
