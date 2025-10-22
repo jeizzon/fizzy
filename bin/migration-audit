@@ -6,21 +6,6 @@ set -eo pipefail
 app_root="$(cd "$(dirname "$0")/.."; pwd)"
 export PATH="$app_root/bin:$PATH"
 
-# Install gum if needed
-if ! command -v gum &> /dev/null; then
-  echo
-  echo "▸ Installing gum"
-  if command -v pacman &> /dev/null; then
-    sudo pacman -S --noconfirm gum
-  elif command -v brew &> /dev/null; then
-    brew install gum
-  else
-    echo "Please install gum: https://github.com/charmbracelet/gum"
-    exit 1
-  fi
-  echo
-fi
-
 step() {
   local spin=false
   if [[ $1 == "--spin" ]] ; then
@@ -62,12 +47,12 @@ echo
 
 step "Deleting schema files" rm -f db/schema.rb db/schema_cache.yml
 
-step "Deleting tenant directory" rm -rf storage/tenants/development/175932900
+step "Deleting tenant directory" rm -rf storage/tenants/development/686465299
 
 step --spin "Migrating..." "Regenerating schema files" bin/rails db:migrate
 
 # Check if the schema files have any git changes
-if git diff --quiet db/schema.rb db/schema_cache.yml; then
+if git diff --quiet -- db/schema.rb db/schema_cache.yml; then
   gum style --foreground 46 "✓ Schema files are in sync with migrations"
   exit 0
 else
@@ -75,6 +60,6 @@ else
   gum style --foreground 196 --bold "✗ Schema files are out of sync with migrations!"
   echo
   gum style --foreground 135 --bold "Differences:"
-  git --no-pager diff db/schema.rb db/schema_cache.yml
+  git --no-pager diff -- db/schema.rb db/schema_cache.yml
   exit 1
 fi
