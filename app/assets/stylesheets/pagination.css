@@ -8,14 +8,13 @@
 
     &.pagination-link--active-when-observed {
       block-size: 0;
-      font-size: 0;
-      inset: auto auto 0;
-      line-height: 0;
+      inline-size: 0;
       overflow: hidden;
-      position: absolute;
       visibility: hidden;
-      height: 0;
-      text-indent: -9999px;
+
+      turbo-frame:has(&):has(~ turbo-frame) & {
+        display: none;
+      }
     }
 
     &[aria-busy="true"] {
