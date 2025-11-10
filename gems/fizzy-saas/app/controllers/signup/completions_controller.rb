@@ -1,6 +1,4 @@
 class Signup::CompletionsController < ApplicationController
-  require_untenanted_access
-
   layout "public"
 
   def new
