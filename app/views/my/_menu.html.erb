@@ -1,4 +1,6 @@
-<nav class="nav" data-controller="dialog" data-action="keydown.esc->dialog#close click@document->dialog#closeOnClickOutside">
+<nav class="nav"
+    data-controller="dialog"
+    data-action="keydown.esc->dialog#close click@document->dialog#closeOnClickOutside mouseenter->dialog#loadLazyFrames">
   <%= tag.button class:"nav__trigger input input--select center flex-inline align-center txt-normal", data: {
         action: "click->dialog#open:stop keydown.j@document->hotkey#click keydown.meta+j@document->hotkey#click keydown.ctrl+j@document->hotkey#click",
         controller: "hotkey" } do %>
