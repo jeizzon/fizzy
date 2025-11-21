@@ -1,5 +1,6 @@
 <% if card.published? %>
-  <%= turbo_frame_tag card, :edit, data: { turbo_permanent: true } do %>
+  <div data-turbo-permanent>
+  <%= turbo_frame_tag card, :edit do %>
     <h1 class="card__title flex align-start gap-half">
       <%= link_to card.title, edit_card_path(card), class: "card__title-link" %>
     </h1>
@@ -15,6 +16,7 @@
       <kbd class="txt-x-small hide-on-touch">e</kbd>
     <% end %>
   <% end %>
+  </div>
 <% else %>
   <%= form_with model: card, id: "card_form", data: { controller: "autoresize auto-save" } do |form| %>
     <h1 class="card__title">
