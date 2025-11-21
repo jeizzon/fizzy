@@ -23,7 +23,6 @@ module Search::Record::Trilogy
     end
 
     def for_account(account_id)
-      # MySQL uses sharded tables
       shard_classes[shard_id_for_account(account_id)]
     end
 
@@ -32,13 +31,11 @@ module Search::Record::Trilogy
     end
 
     def matching_scope(query)
-      # MySQL FULLTEXT: manually stem query terms
       stemmed_query = Search::Stemmer.stem(query)
       where("MATCH(#{table_name}.content, #{table_name}.title) AGAINST(? IN BOOLEAN MODE)", stemmed_query)
     end
 
     def search_scope(relation, query)
-      # MySQL: select specific columns needed
       relation.select(:id, :searchable_type, :searchable_id, :card_id, :board_id, :account_id, :created_at, "#{connection.quote(query.terms)} AS query")
     end
   end
@@ -57,7 +54,6 @@ module Search::Record::Trilogy
 
   private
     def stem_content
-      # MySQL: stem content for FULLTEXT search
       self.title = Search::Stemmer.stem(title) if title_changed?
       self.content = Search::Stemmer.stem(content) if content_changed?
     end
