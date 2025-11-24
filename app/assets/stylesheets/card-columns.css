@@ -82,9 +82,11 @@
 
       &.is-off-screen {
         &:after {
+          background-color: var(--column-color);
           content: attr(data-column-name);
           font-size: var(--text-x-small);
           font-weight: 500;
+          inline-size: calc(var(--column-width-expanded) - 4px); /* make room for the dnd border */
           line-height: var(--column-width-collapsed);
           padding-inline: 1ch;
           position: fixed;
@@ -95,14 +97,9 @@
 
         &.is-collapsed {
           &:after {
+            background-color: transparent;
+            inline-size: calc(var(--column-width-collapsed) - 4px);
             writing-mode: vertical-rl;
-          }
-        }
-
-        &:not(.is-collapsed) {
-          &:after {
-            background-color: var(--column-color);
-            inline-size: calc(var(--column-width-expanded) - 4px); /* make room for the dnd border */
           }
         }
       }
@@ -119,15 +116,16 @@
   .cards__transition-container {
     block-size: 100%;
     border-radius: calc(var(--column-width-collapsed) / 2);
+    padding-inline: var(--column-padding-expanded);
     translate: 0;
     transition: translate var(--column-transition-duration) var(--ease-out-overshoot-subtle);
 
-    .is-collapsed:not(.cards--considering) & {
-      translate: 0 var(--column-width-collapsed);
+    .is-collapsed & {
+      padding-inline: 0;
     }
 
-    .cards:not(.is-collapsed) & {
-      padding-inline: var(--column-padding-expanded);
+    .is-collapsed:not(.cards--considering) & {
+      translate: 0 var(--column-width-collapsed);
     }
 
     .drag-and-drop__hover-container & {
@@ -156,9 +154,10 @@
     margin-block-start: -1ch;
     margin-inline: -1ch;
     overflow: hidden;
+    padding: 1ch;
 
-    .cards:not(.is-collapsed) & {
-      padding: 1ch;
+    .is-collapsed & {
+      padding: 0;
     }
 
     .card {
@@ -228,15 +227,15 @@
   /* ------------------------------------------------------------------------ */
 
   .cards__header {
-    .cards.is-collapsed & {
-      block-size: 100%;
-    }
+    display: grid;
+    grid-template-areas: "menu expander maximize";
+    grid-template-columns: var(--column-width-collapsed) 1fr var(--column-width-collapsed);
+    margin-block-end: calc(0.5 * var(--cards-gap));
 
-    .cards:not(.is-collapsed) & {
-      display: grid;
-      grid-template-areas: "menu expander maximize";
-      grid-template-columns: var(--column-width-collapsed) 1fr var(--column-width-collapsed);
-      margin-block-end: calc(0.5 * var(--cards-gap));
+    .is-collapsed & {
+      block-size: 100%;
+      display: block;
+      margin-block-end: 0;
     }
   }
 
@@ -254,7 +253,7 @@
       opacity: 1;
     }
 
-    .cards.is-collapsed & {
+    .is-collapsed & {
       display: none;
     }
   }
@@ -279,9 +278,16 @@
     font-weight: 600;
     gap: 0.5ch;
     grid-area: expander;
+    inline-size: 100%;
+    justify-content: center;
     outline-offset: -2px;
     position: relative;
     text-transform: uppercase;
+
+    .is-collapsed & {
+      inline-size: auto;
+      justify-content: flex-start;
+    }
 
     @media (any-hover: hover) {
       &:hover {
@@ -312,7 +318,7 @@
       transition: none;
     }
 
-    .cards.is-collapsed & {
+    .is-collapsed & {
       block-size: 100%;
       flex-direction: column;
       inline-size: var(--column-width-collapsed);
@@ -337,11 +343,6 @@
       }
     }
 
-    .cards:not(.is-collapsed) & {
-      inline-size: 100%;
-      justify-content: center;
-    }
-
     .cards:is(.cards--considering) &:hover {
       cursor: unset;
       filter: none;
@@ -349,11 +350,12 @@
   }
 
   .cards__expander-count {
+    display: none;
     line-height: var(--column-width-collapsed);
     inline-size: var(--column-width-collapsed);
 
-    .cards:not(.is-collapsed) & {
-      display: none;
+    .is-collapsed & {
+      display: block;
     }
   }
 
@@ -385,13 +387,13 @@
       transition: 150ms ease-out;
       transition-property: opacity, scale;
 
-      .cards.is-collapsed & {
-        display: none;
-      }
-
-      .cards:not(.is-collapsed) .cards__expander:hover & {
+      .cards__expander:hover & {
         opacity: 0.66;
         scale: 1;
+      }
+
+      .is-collapsed & {
+        display: none;
       }
     }
   }
