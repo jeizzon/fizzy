@@ -65,6 +65,13 @@ setup_database() {
   local label="${adapter:+ ($adapter)}"
   local env_cmd="${adapter:+env DATABASE_ADAPTER=$adapter}"
 
+  # When setting up sqlite in SAAS mode, we need to disable SAAS so that
+  # database.yml will use database.sqlite.yml instead of the fizzy-saas config.
+  # We also unset BUNDLE_GEMFILE so the standard Gemfile is used (without fizzy-saas).
+  if [ -n "$SAAS" ] && [ "$adapter" = "sqlite" ]; then
+    env_cmd="env DATABASE_ADAPTER=$adapter SAAS=false BUNDLE_GEMFILE="
+  fi
+
   if [ "$reset" = "true" ]; then
     step "Resetting the database$label" $env_cmd rails db:reset
   else
