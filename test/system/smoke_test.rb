@@ -15,6 +15,7 @@ class SmokeTest < ApplicationSystemTestCase
     send_keys :enter
 
     assert_selector "input[id=user_name]"
+    assert account.users.find_by!(identity:).verified?, "User was not properly verified"
     fill_in "Full name", with: "New Bee"
     click_on "Continue"
 
