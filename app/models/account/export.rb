@@ -19,7 +19,7 @@ class Account::Export < ApplicationRecord
 
   def build
     processing!
-    zipfile = generate_zip
+    zipfile = generate_zip { |zip| populate_zip(zip) }
 
     file.attach io: File.open(zipfile.path), filename: "fizzy-export-#{id}.zip", content_type: "application/zip"
     mark_completed
@@ -42,36 +42,29 @@ class Account::Export < ApplicationRecord
   end
 
   private
+    def populate_zip(zip)
+      raise NotImplementedError, "Subclasses must implement populate_zip"
+    end
+
     def generate_zip
+      raise ArgumentError, "Block is required" unless block_given?
+
       Tempfile.new([ "export", ".zip" ]).tap do |tempfile|
         Zip::File.open(tempfile.path, create: true) do |zip|
-          exportable_cards.find_each do |card|
-            add_card_to_zip(zip, card)
-          end
+          yield zip
         end
       end
     end
 
-    def exportable_cards
-      user.accessible_cards.includes(
-        :board,
-        creator: :identity,
-        comments: { creator: :identity },
-        rich_text_description: { embeds_attachments: :blob }
-      )
-    end
-
-    def add_card_to_zip(zip, card)
-      zip.get_output_stream("#{card.number}.json") do |f|
-        f.write(card.export_json)
-      end
-
-      card.export_attachments.each do |attachment|
-        zip.get_output_stream(attachment[:path], compression_method: Zip::Entry::STORED) do |f|
-          attachment[:blob].download { |chunk| f.write(chunk) }
+    def add_file_to_zip(zip, path, content = nil, **options)
+      zip.get_output_stream(path, **options) do |f|
+        if block_given?
+          yield f
+        elsif content
+          f.write(content)
+        else
+          raise ArgumentError, "Either content or a block must be provided"
         end
-      rescue ActiveStorage::FileNotFoundError
-        # Skip attachments where the file is missing from storage
       end
     end
 end
