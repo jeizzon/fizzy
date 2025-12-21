@@ -1,6 +1,7 @@
 @layer components {
   .welcome-letter {
     position: relative;
+    view-transition-name: welcome-letter;
     z-index: 99;
 
     h2, p {
