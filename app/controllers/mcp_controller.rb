@@ -1,3 +1,5 @@
+require Rails.root.join("config/mcp")
+
 class McpController < ApplicationController
   skip_forgery_protection
 
@@ -7,60 +9,7 @@ class McpController < ApplicationController
   end
 
   private
-    TOOLS = [
-      {
-        name: "list_boards",
-        description: "List boards accessible to the authenticated user.",
-        input_schema: { type: "object", properties: {} }
-      },
-      {
-        name: "show_board",
-        description: "Show board details, recent cards, and columns.",
-        input_schema: {
-          type: "object",
-          properties: {
-            board_id: { type: "string", description: "Board UUID" }
-          },
-          required: [ "board_id" ]
-        }
-      },
-      {
-        name: "create_card",
-        description: "Create a published card on a board.",
-        input_schema: {
-          type: "object",
-          properties: {
-            board_id: { type: "string", description: "Board UUID" },
-            title: { type: "string", description: "Card title" },
-            description: { type: "string", description: "Optional rich text body" }
-          },
-          required: [ "board_id", "title" ]
-        }
-      },
-      {
-        name: "close_card",
-        description: "Close a card by its account-wide number.",
-        input_schema: {
-          type: "object",
-          properties: {
-            card_number: { type: "integer", description: "Card number" }
-          },
-          required: [ "card_number" ]
-        }
-      },
-      {
-        name: "create_comment",
-        description: "Create a comment on a card.",
-        input_schema: {
-          type: "object",
-          properties: {
-            card_number: { type: "integer", description: "Card number" },
-            body: { type: "string", description: "Comment body" }
-          },
-          required: [ "card_number", "body" ]
-        }
-      }
-    ]
+    TOOLS = Mcp.definition.tools
 
     def dispatch_rpc_request
       case rpc_method
