@@ -22,12 +22,12 @@ class McpController < ActionController::Base
   private
     def authenticate_by_bearer_token
       if token = extract_bearer_token
-        if identity = Identity.find_by_permissable_access_token(token, method: "POST")
+        if identity = Identity::AccessToken.find_by(token: token)&.identity
           Current.identity = identity
         end
-      else
-        head :unauthorized
       end
+
+      head :unauthorized
     end
 
     def extract_bearer_token
