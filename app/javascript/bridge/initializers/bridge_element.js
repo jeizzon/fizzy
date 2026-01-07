@@ -16,8 +16,7 @@ BridgeElement.prototype.getButton = function() {
   return {
     title: this.title,
     icon: this.getIcon(),
-    label: this.getLabel(),
-    order: this.getOrder()
+    label: this.getLabel()
   }
 }
 
@@ -34,14 +33,6 @@ BridgeElement.prototype.getIcon = function() {
 
 BridgeElement.prototype.getLabel = function() {
   return this.bridgeAttribute("label")
-}
-
-BridgeElement.prototype.getOrder = function() {
-  return this.bridgeAttribute("order") || "1"
-}
-
-BridgeElement.prototype.shouldDisplayAsFormSubmitMenu = function() {
-  return this.bridgeAttribute("display-as-form-submit-menu") === "true"
 }
 
 BridgeElement.prototype.displaysNavButtonMenu = function() {

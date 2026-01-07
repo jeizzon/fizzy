@@ -52,12 +52,12 @@
   }
 }
 
-[data-bridge-components~=nav-button] {
-  [data-controller~=bridge--nav-button]:not(summary) {
+[data-bridge-components~=buttons] {
+  [data-bridge--buttons-target~=button]:not(summary) {
     display: none;
   }
 
-  summary[data-controller~=bridge--nav-button] {
+  summary[data-bridge--buttons-target~=button] {
     overflow: hidden;
     width: 0;
     height: 0;
