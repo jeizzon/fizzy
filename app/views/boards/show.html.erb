@@ -16,30 +16,6 @@
   <div class="header__actions header__actions--end hide-on-native">
     <%= link_to_edit_board @board %>
   </div>
-
-    <div class="visually-hidden">
-      <%= button_to board_cards_path(@board),
-        method: :post,
-        form: { data: { turbo_frame: "_top" } },
-        data: {
-          bridge__buttons_target: "button",
-          bridge_icon_name: "plus",
-          bridge_title: "Add card"
-        } do %>
-        Add card
-      <% end %>
-    </div>
-
-    <div class="visually-hidden" data-controller="bridge--overflow-menu">
-      <%= link_to "Settings",
-        edit_board_path(@board),
-        data: { bridge__overflow_menu_target: "item" } %>
-      <% if Current.user.admin? %>
-        <%= link_to "Webhooks",
-          board_webhooks_path(@board),
-          data: { bridge__overflow_menu_target: "item" } %>
-      <% end %>
-    </div>
 <% end %>
 
 <%= render "filters/settings", filter_url: board_path(@board), user_filtering: @user_filtering, no_filtering_url: board_path(@board) do |form| %>
