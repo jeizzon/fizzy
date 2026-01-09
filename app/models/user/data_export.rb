@@ -1,4 +1,4 @@
-class Account::SingleUserExport < Account::Export
+class User::DataExport < Export
   private
     def populate_zip(zip)
       exportable_cards.find_each do |card|

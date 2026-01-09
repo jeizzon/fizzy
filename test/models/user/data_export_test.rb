@@ -1,8 +1,8 @@
 require "test_helper"
 
-class Account::SingleUserExportTest < ActiveSupport::TestCase
+class User::DataExportTest < ActiveSupport::TestCase
   test "build generates zip with card JSON files" do
-    export = Account::SingleUserExport.create!(account: Current.account, user: users(:david))
+    export = User::DataExport.create!(account: Current.account, user: users(:david))
 
     export.build
 
@@ -12,7 +12,7 @@ class Account::SingleUserExportTest < ActiveSupport::TestCase
   end
 
   test "build sets status to processing then completed" do
-    export = Account::SingleUserExport.create!(account: Current.account, user: users(:david))
+    export = User::DataExport.create!(account: Current.account, user: users(:david))
 
     export.build
 
@@ -21,7 +21,7 @@ class Account::SingleUserExportTest < ActiveSupport::TestCase
   end
 
   test "build sends email when completed" do
-    export = Account::SingleUserExport.create!(account: Current.account, user: users(:david))
+    export = User::DataExport.create!(account: Current.account, user: users(:david))
 
     assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
       export.build
@@ -30,7 +30,7 @@ class Account::SingleUserExportTest < ActiveSupport::TestCase
 
   test "build includes only accessible cards for user" do
     user = users(:david)
-    export = Account::SingleUserExport.create!(account: Current.account, user: user)
+    export = User::DataExport.create!(account: Current.account, user: user)
 
     export.build
 
@@ -57,6 +57,14 @@ class Account::SingleUserExportTest < ActiveSupport::TestCase
         assert json_content.key?("description")
         assert json_content.key?("comments")
       end
+    end
+  end
+
+  test "build_later enqueues ExportDataJob" do
+    export = User::DataExport.create!(account: Current.account, user: users(:david))
+
+    assert_enqueued_with(job: ExportDataJob, args: [ export ]) do
+      export.build_later
     end
   end
 end
