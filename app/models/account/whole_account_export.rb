@@ -45,7 +45,10 @@ class Account::WholeAccountExport < Account::Export
 
     def export_users(zip)
       account.users.find_each do |user|
-        add_file_to_zip(zip, "data/users/#{user.id}.json", JSON.pretty_generate(user.as_json))
+        data = user.as_json.except("identity_id").merge(
+          "email_address" => user.identity&.email_address
+        )
+        add_file_to_zip(zip, "data/users/#{user.id}.json", JSON.pretty_generate(data))
       end
     end
 

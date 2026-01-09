@@ -1,0 +1,21 @@
+<% @page_title = "Import an account" %>
+
+<div class="panel panel--centered flex flex-column gap-half">
+  <h1 class="txt-x-large font-weight-black margin-block-end">Import an account</h1>
+
+  <%= form_with url: imports_path, class: "flex flex-column gap", data: { controller: "form" }, multipart: true do |form| %>
+    <div class="flex flex-column gap-half">
+      <%= form.file_field :file, accept: ".zip", required: true, class: "input" %>
+      <p class="txt-small txt-deemphasized margin-none">Upload the .zip file from your Fizzy export.</p>
+    </div>
+
+    <button type="submit" class="btn btn--link center txt-medium" data-form-target="submit">
+      <span>Import</span>
+      <%= icon_tag "arrow-right" %>
+    </button>
+  <% end %>
+</div>
+
+<% content_for :footer do %>
+  <%= render "sessions/footer" %>
+<% end %>

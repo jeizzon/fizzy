@@ -1,8 +1,9 @@
 class ImportMailer < ApplicationMailer
-  def completed(import)
-    @import = import
-    @identity = import.identity
+  def completed(identity)
+    mail to: identity.email_address, subject: "Your Fizzy account import is complete"
+  end
 
-    mail to: @identity.email_address, subject: "Your Fizzy account import is complete"
+  def failed(identity)
+    mail to: identity.email_address, subject: "Your Fizzy account import failed"
   end
 end

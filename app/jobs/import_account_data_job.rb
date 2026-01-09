@@ -2,6 +2,6 @@ class ImportAccountDataJob < ApplicationJob
   queue_as :backend
 
   def perform(import)
-    import.build
+    import.perform
   end
 end

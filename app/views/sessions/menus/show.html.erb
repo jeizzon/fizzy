@@ -24,9 +24,12 @@
       <p class="margin-none-block-start">You don’t have any Fizzy accounts.</p>
     <% end %>
 
-    <div class="margin-block-start">
+    <div class="margin-block-start flex flex-column gap-half">
       <%= link_to new_signup_path, class: "btn btn--plain txt-link center txt-small", data: { turbo_prefetch: false } do %>
         <span>Sign up for a new Fizzy account</span>
+      <% end %>
+      <%= link_to new_import_path, class: "btn btn--plain txt-link center txt-small", data: { turbo_prefetch: false } do %>
+        <span>Import an exported account</span>
       <% end %>
     </div>
   </div>
