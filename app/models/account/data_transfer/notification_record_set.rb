@@ -42,7 +42,7 @@ class Account::DataTransfer::NotificationRecordSet < Account::DataTransfer::Reco
       end
 
       missing = ATTRIBUTES - data.keys
-      unless missing.empty?
+      if missing.any?
         raise IntegrityError, "#{file_path} is missing required fields: #{missing.join(', ')}"
       end
     end
