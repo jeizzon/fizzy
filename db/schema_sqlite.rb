@@ -33,18 +33,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_092315) do
     t.index ["account_id"], name: "index_account_cancellations_on_account_id", unique: true
   end
 
-  create_table "account_exports", id: :uuid, force: :cascade do |t|
-    t.uuid "account_id", null: false
-    t.datetime "completed_at"
-    t.datetime "created_at", null: false
-    t.string "status", limit: 255, default: "pending", null: false
-    t.string "type"
-    t.datetime "updated_at", null: false
-    t.uuid "user_id", null: false
-    t.index ["account_id"], name: "index_account_exports_on_account_id"
-    t.index ["user_id"], name: "index_account_exports_on_user_id"
-  end
-
   create_table "account_external_id_sequences", id: :uuid, force: :cascade do |t|
     t.bigint "value", default: 0, null: false
     t.index ["value"], name: "index_account_external_id_sequences_on_value", unique: true
@@ -305,6 +293,19 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_092315) do
     t.index ["eventable_type", "eventable_id"], name: "index_events_on_eventable"
   end
 
+  create_table "exports", id: :uuid, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.string "status", limit: 255, default: "pending", null: false
+    t.string "type"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["account_id"], name: "index_exports_on_account_id"
+    t.index ["type"], name: "index_exports_on_type"
+    t.index ["user_id"], name: "index_exports_on_user_id"
+  end
+
   create_table "filters", id: :uuid, force: :cascade do |t|
     t.uuid "account_id", null: false
     t.datetime "created_at", null: false
@@ -489,7 +490,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_092315) do
     t.string "operation", limit: 255, null: false
     t.uuid "recordable_id"
     t.string "recordable_type", limit: 255
-    t.string "request_id", limit: 255
+    t.string "request_id"
     t.uuid "user_id"
     t.index ["account_id"], name: "index_storage_entries_on_account_id"
     t.index ["blob_id"], name: "index_storage_entries_on_blob_id"
