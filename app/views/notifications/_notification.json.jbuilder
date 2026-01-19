@@ -6,10 +6,7 @@ json.cache! notification do
 
   json.partial! "notifications/notification/#{notification.source_type.underscore}/body", notification: notification
 
-  json.creator do
-    json.partial! "users/user", user: notification.creator
-    json.avatar_url user_avatar_url(notification.creator)
-  end
+  json.creator notification.creator, partial: "users/user", as: :user
 
   json.card do
     json.(notification.card, :id, :number, :title, :status)
