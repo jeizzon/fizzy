@@ -1,17 +1,21 @@
 <% @page_title = "Import an account" %>
 
-<div class="panel panel--centered flex flex-column gap-half">
-  <h1 class="txt-x-large font-weight-black margin-block-end">Import an account</h1>
+<div class="panel panel--centered flex flex-column gap">
+  <header>
+    <h1 class="txt-x-large font-weight-black txt-tight-lines margin-block-end-half">Import a Fizzy account</h1>
+    <div>Upload the .zip file from your Fizzy export</div>
+  </header>
 
-  <%= form_with url: imports_path, class: "flex flex-column gap", data: { controller: "form" }, multipart: true do |form| %>
-    <div class="flex flex-column gap-half">
-      <%= form.file_field :file, accept: ".zip", required: true, class: "input" %>
-      <p class="txt-small txt-deemphasized margin-none">Upload the .zip file from your Fizzy export.</p>
-    </div>
+  <%= form_with url: imports_path, class: "flex flex-column gap", data: { controller: "form upload-preview" }, multipart: true do |form| %>
+
+    <label class="btn input--upload">
+      <div data-upload-preview-target="placeholder">Choose a file…</div>
+      <div data-upload-preview-target="fileName" hidden></div>
+      <%= form.file_field :file, accept: ".zip", required: true, data: { action: "upload-preview#previewFileName", upload_preview_target: "input" } %>
+    </label>
 
     <button type="submit" class="btn btn--link center txt-medium" data-form-target="submit">
-      <span>Import</span>
-      <%= icon_tag "arrow-right" %>
+      <span>Start Import →</span>
     </button>
   <% end %>
 </div>

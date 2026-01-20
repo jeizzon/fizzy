@@ -6,7 +6,7 @@
   <% case @import.status %>
   <% when "pending", "processing" %>
     <p class="txt-medium">Your import is in progress. This may take a while for large accounts.</p>
-    <p class="txt-small txt-deemphasized">This page will refresh automatically.</p>
+    <p class="txt-small">This page will refresh automatically.</p>
     <meta http-equiv="refresh" content="5">
   <% when "completed" %>
     <p class="txt-medium txt-positive">Your import has completed successfully!</p>
