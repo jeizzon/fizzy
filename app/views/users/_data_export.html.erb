@@ -4,13 +4,13 @@
     <div>Download an archive of your Fizzy data.</div>
   </header>
 
-  <div data-controller="dialog" data-dialog-modal-value="true">
+  <div data-controller="dialog" data-dialog-modal-value="true" data-action="keydown.esc->dialog#close">
     <button type="button" class="btn" data-action="dialog#open">Begin export...</button>
 
-    <dialog class="dialog panel panel--wide shadow" data-dialog-target="dialog">
-      <h2 class="margin-none txt-large">Export your data</h2>
-      <p class="margin-none-block-start">This will generate a ZIP archive of all cards you have access to.</p>
-      <p>When ready, we'll email you a download link (expires in 24 hours).</p>
+    <dialog class="dialog panel panel--wide shadow" data-dialog-target="dialog" style="--panel-size: 48ch;">
+      <h2 class="txt-large">Export your data</h2>
+      <p>This will generate a ZIP archive of all cards you have access to.</p>
+      <p>We‘ll email you a link to download the file when it‘s ready. The link will expire after 24 hours.</p>
 
       <div class="flex gap justify-center">
         <%= button_to "Start export", user_data_exports_path(@user), method: :post, class: "btn btn--link", form: { data: { action: "submit->dialog#close" } } %>
