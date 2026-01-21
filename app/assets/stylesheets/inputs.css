@@ -106,6 +106,7 @@
 
   .input--upload {
     --btn-border-color: var(--color-ink);
+    --btn-border-radius: 1ch;
 
     border-style: dashed;
     position: relative;
