@@ -41,4 +41,22 @@ class Account::ExportTest < ActiveSupport::TestCase
     assert export.file.attached?
     assert_equal "application/zip", export.file.content_type
   end
+
+  test "build includes blob files in zip" do
+    blob = ActiveStorage::Blob.create_and_upload!(
+      io: file_fixture("moon.jpg").open,
+      filename: "moon.jpg",
+      content_type: "image/jpeg"
+    )
+    export = Account::Export.create!(account: Current.account, user: users(:david))
+
+    export.build
+
+    assert export.completed?
+    export.file.open do |file|
+      Zip::File.open(file.path) do |zip|
+        assert zip.find_entry("storage/#{blob.key}"), "Expected blob file in zip"
+      end
+    end
+  end
 end

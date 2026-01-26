@@ -26,7 +26,7 @@ class Account::DataTransfer::ZipFile
   def add_file(path, content = nil, compress: true, &block)
     if block_given?
       compression = compress ? nil : Zip::Entry::STORED
-      zip.get_output_stream(path, nil, nil, compression, &block)
+      zip.get_output_stream(path, compression_method: compression, &block)
     else
       zip.get_output_stream(path) { |f| f.write(content) }
     end
