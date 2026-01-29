@@ -1,13 +1,13 @@
 <% @page_title = "Import status" %>
 
+<%= turbo_stream_from @import %>
+
 <div class="panel panel--centered flex flex-column gap-half">
   <h1 class="txt-x-large font-weight-black margin-block-end">Import status</h1>
 
   <% case @import.status %>
   <% when "pending", "processing" %>
     <p class="txt-medium">Your import is in progress. This may take a while for large accounts.</p>
-    <p class="txt-small">This page will refresh automatically.</p>
-    <meta http-equiv="refresh" content="5">
   <% when "completed" %>
     <p class="txt-medium txt-positive">Your import has completed successfully!</p>
     <%= link_to "Go to your account", landing_url(script_name: @import.account.slug), class: "btn btn--link center txt-medium" %>
