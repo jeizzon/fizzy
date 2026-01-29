@@ -1,5 +1,5 @@
 class ImportsController < ApplicationController
-  disallow_account_scope
+  disallow_account_scope only: %i[ new create ]
 
   layout "public"
 
@@ -7,32 +7,28 @@ class ImportsController < ApplicationController
   end
 
   def create
-    account = create_account_for_import
+    signup = Signup.new(identity: Current.identity, full_name: "Import", skip_account_seeding: true)
 
-    Current.set(account: account) do
-      @import = account.imports.create!(identity: Current.identity, file: params[:file])
+    if signup.complete
+      start_import(signup.account)
+    else
+      render :new, alert: "Couldn't create account."
     end
-
-    @import.perform_later
-    redirect_to import_path(@import)
   end
 
   def show
-    @import = Current.identity.imports.find(params[:id])
+    @import = Current.account.imports.find(params[:id])
   end
 
   private
-    def create_account_for_import
-      Account.create_with_owner(
-        account: { name: account_name_from_zip },
-        owner: { name: Current.identity.email_address.split("@").first, identity: Current.identity }
-      )
-    end
+    def start_import(account)
+      import = nil
 
-    def account_name_from_zip
-      Zip::File.open(params[:file].tempfile.path) do |zip|
-        entry = zip.find_entry("data/account.json")
-        JSON.parse(entry.get_input_stream.read)["name"]
+      Current.set(account: account) do
+        import = account.imports.create!(identity: Current.identity, file: params[:file])
+        import.process_later
       end
+
+      redirect_to import_path(import, script_name: account.slug)
     end
 end
