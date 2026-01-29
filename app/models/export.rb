@@ -29,7 +29,7 @@ class Export < ApplicationRecord
     end
   rescue => e
     update!(status: :failed)
-    raise
+    raise e
   ensure
     zipfile&.close
     zipfile&.unlink

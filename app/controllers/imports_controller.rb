@@ -1,7 +1,8 @@
 class ImportsController < ApplicationController
-  disallow_account_scope only: %i[ new create ]
-
   layout "public"
+
+  disallow_account_scope only: %i[ new create ]
+  before_action :set_import, only: %i[ show ]
 
   def new
   end
@@ -17,10 +18,13 @@ class ImportsController < ApplicationController
   end
 
   def show
-    @import = Current.account.imports.find(params[:id])
   end
 
   private
+    def set_import
+      @import = Current.account.imports.find(params[:id])
+    end
+
     def start_import(account)
       import = nil
 
