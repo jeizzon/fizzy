@@ -20,20 +20,19 @@ class Export < ApplicationRecord
   def build
     processing!
 
+    zipfile = nil
     with_account_context do
       zipfile = generate_zip { |zip| populate_zip(zip) }
-
       file.attach io: File.open(zipfile.path), filename: "fizzy-export-#{id}.zip", content_type: "application/zip"
       mark_completed
-
       ExportMailer.completed(self).deliver_later
-    ensure
-      zipfile&.close
-      zipfile&.unlink
     end
   rescue => e
     update!(status: :failed)
     raise
+  ensure
+    zipfile&.close
+    zipfile&.unlink
   end
 
   def mark_completed

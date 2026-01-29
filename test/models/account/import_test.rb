@@ -67,7 +67,7 @@ class Account::ImportTest < ActiveSupport::TestCase
     target_account = create_target_account
 
     # Pre-create a tag with a specific ID that will collide
-    colliding_id = SecureRandom.uuid
+    colliding_id = ActiveRecord::Type::Uuid.generate
     Tag.create!(
       id: colliding_id,
       account: target_account,
@@ -189,7 +189,7 @@ class Account::ImportTest < ActiveSupport::TestCase
 
         # Export users with new UUIDs (to avoid collisions with fixtures)
         @source_account.users.each do |user|
-          new_id = SecureRandom.uuid
+          new_id = ActiveRecord::Type::Uuid.generate
           user_data = {
             "id" => new_id,
             "account_id" => @source_account.id,
@@ -206,7 +206,7 @@ class Account::ImportTest < ActiveSupport::TestCase
 
         # Export tags with new UUIDs (to avoid collisions with fixtures)
         @source_account.tags.each do |tag|
-          new_id = tag_id || SecureRandom.uuid
+          new_id = tag_id || ActiveRecord::Type::Uuid.generate
           tag_data = {
             "id" => new_id,
             "account_id" => @source_account.id,

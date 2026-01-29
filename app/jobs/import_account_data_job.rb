@@ -7,13 +7,17 @@ class ImportAccountDataJob < ApplicationJob
     step :validate do
       import.validate \
         start: step.cursor,
-        callback: proc { |record_set:, record_id:| step.set! [ record_set, record_id ] }
+        callback: proc do |record_set:, file:|
+          step.set!([ record_set.model.name, file ])
+        end
     end
 
     step :process do
       import.process \
         start: step.cursor,
-        callback: proc { |record_set:, record_id:| step.set! [ record_set, record_id ] }
+        callback: proc do |record_set:, files:|
+          step.set!([ record_set.model.name, files.last ])
+        end
     end
   end
 end

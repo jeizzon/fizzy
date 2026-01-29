@@ -1,6 +1,4 @@
 class Account::DataTransfer::Manifest
-  Cursor = Struct.new(:record_class, :last_id)
-
   attr_reader :account
 
   def initialize(account)
@@ -10,8 +8,16 @@ class Account::DataTransfer::Manifest
   def each_record_set(start: nil)
     raise ArgumentError, "No block given" unless block_given?
 
+    started = start.nil?
+    record_class, last_id = start if start
+
     record_sets.each do |record_set|
-      yield record_set
+      if started
+        yield record_set
+      elsif record_set.model.name == record_class
+        started = true
+        yield record_set, last_id
+      end
     end
   end
 
@@ -20,37 +26,24 @@ class Account::DataTransfer::Manifest
       [
         Account::DataTransfer::AccountRecordSet.new(account),
         Account::DataTransfer::UserRecordSet.new(account),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::User::Settings),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Tag),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Board),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Column),
+        *build_record_sets(::User::Settings, ::Tag, ::Board, ::Column),
         Account::DataTransfer::EntropyRecordSet.new(account),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Board::Publication),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Webhook),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Access),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Card),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Comment),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Step),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Assignment),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Tagging),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Closure),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Card::Goldness),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Card::NotNow),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Card::ActivitySpike),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Watch),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Pin),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Reaction),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Mention),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Filter),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Webhook::DelinquencyTracker),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Event),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Notification),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Notification::Bundle),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Webhook::Delivery),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::ActiveStorage::Blob),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::ActiveStorage::Attachment),
+        *build_record_sets(
+          ::Board::Publication, ::Webhook, ::Access, ::Card, ::Comment, ::Step,
+          ::Assignment, ::Tagging, ::Closure, ::Card::Goldness, ::Card::NotNow,
+          ::Card::ActivitySpike, ::Watch, ::Pin, ::Reaction, ::Mention,
+          ::Filter, ::Webhook::DelinquencyTracker, ::Event,
+          ::Notification, ::Notification::Bundle, ::Webhook::Delivery,
+          ::ActiveStorage::Blob, ::ActiveStorage::Attachment
+        ),
         Account::DataTransfer::ActionTextRichTextRecordSet.new(account),
         Account::DataTransfer::BlobFileRecordSet.new(account)
       ]
+    end
+
+    def build_record_sets(*models)
+      models.map do |model|
+        Account::DataTransfer::RecordSet.new(account: account, model: model)
+      end
     end
 end

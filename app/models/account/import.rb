@@ -17,14 +17,15 @@ class Account::Import < ApplicationRecord
     ensure_downloaded
 
     Account::DataTransfer::ZipFile.open(download_path) do |zip|
-      Account::DataTransfer::Manifest.new(account).each_record_set(start: start&.record_set) do |record_set|
-        record_set.import(from: zip, start: start&.record_id, callback: callback)
+      Account::DataTransfer::Manifest.new(account).each_record_set(start: start) do |record_set, last_id|
+        record_set.import(from: zip, start: last_id, callback: callback)
       end
     end
 
     mark_completed
   rescue => e
     failed!
+    ImportMailer.failed(identity, account).deliver_later
     raise e
   end
 
@@ -33,8 +34,8 @@ class Account::Import < ApplicationRecord
     ensure_downloaded
 
     Account::DataTransfer::ZipFile.open(download_path) do |zip|
-      Account::DataTransfer::Manifest.new(account).each_record_set(start: start&.record_set) do |record_set|
-        record_set.validate(from: zip, start: start&.record_id, callback: callback)
+      Account::DataTransfer::Manifest.new(account).each_record_set(start: start) do |record_set, last_id|
+        record_set.validate(from: zip, start: last_id, callback: callback)
       end
     end
   end
@@ -54,6 +55,6 @@ class Account::Import < ApplicationRecord
 
     def mark_completed
       completed!
-      # TODO: send email
+      ImportMailer.completed(identity, account).deliver_later
     end
 end

@@ -23,7 +23,10 @@ class Account::DataTransfer::RecordSet
 
   def import(from:, start: nil, callback: nil)
     with_zip(from) do
-      files.each_slice(IMPORT_BATCH_SIZE) do |file_batch|
+      file_list = files
+      file_list = skip_to(file_list, start) if start
+
+      file_list.each_slice(IMPORT_BATCH_SIZE) do |file_batch|
         import_batch(file_batch)
         callback&.call(record_set: self, files: file_batch)
       end
@@ -32,7 +35,10 @@ class Account::DataTransfer::RecordSet
 
   def validate(from:, start: nil, callback: nil)
     with_zip(from) do
-      files.each do |file_path|
+      file_list = files
+      file_list = skip_to(file_list, start) if start
+
+      file_list.each do |file_path|
         validate_record(file_path)
         callback&.call(record_set: self, file: file_path)
       end
@@ -96,6 +102,16 @@ class Account::DataTransfer::RecordSet
 
       if errors.any?
         raise IntegrityError, "Validation failed for #{model} record ID #{data['id']}: #{errors.map(&:full_message).join(', ')}"
+      end
+    end
+
+    def skip_to(file_list, last_id)
+      index = file_list.index(last_id)
+
+      if index
+        file_list[(index + 1)..]
+      else
+        file_list
       end
     end
 
