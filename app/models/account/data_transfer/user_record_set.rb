@@ -40,6 +40,9 @@ class Account::DataTransfer::UserRecordSet < Account::DataTransfer::RecordSet
         )
       end
 
+      conflicting_identity_ids = batch_data.pluck("identity_id").compact
+      account.users.where(identity_id: conflicting_identity_ids).destroy_all
+
       User.insert_all!(batch_data)
     end
 

@@ -1,4 +1,6 @@
 class Account::Import < ApplicationRecord
+  broadcasts_refreshes
+
   belongs_to :account
   belongs_to :identity
 
@@ -7,6 +9,7 @@ class Account::Import < ApplicationRecord
   enum :status, %w[ pending processing completed failed ].index_by(&:itself), default: :pending
 
   def process_later
+    ImportAccountDataJob.perform_later(self)
   end
 
   def process(start: nil, callback: nil)

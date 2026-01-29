@@ -93,6 +93,45 @@ class Account::ImportTest < ActiveSupport::TestCase
     assert import.completed?
   end
 
+  test "export and import round-trip preserves account data" do
+    source_account = accounts("37s")
+    exporter = users(:david)
+    identity = exporter.identity
+
+    # Capture original counts
+    original_counts = capture_counts(source_account)
+
+    # Export
+    export = Account::Export.create!(account: source_account, user: exporter)
+    export.build
+    assert export.completed?
+
+    # Save export file before deleting account
+    export_tempfile = Tempfile.new([ "export", ".zip" ])
+    export.file.open { |f| FileUtils.cp(f.path, export_tempfile.path) }
+
+    # Delete source account
+    source_account.destroy!
+
+    # Create target account
+    target_account = Account.create!(name: "Import Target")
+    target_account.users.create!(role: :system, name: "System")
+    target_account.users.create!(role: :owner, name: "Owner", identity: identity, verified_at: Time.current)
+
+    # Import
+    import = Account::Import.create!(identity: identity, account: target_account)
+    Current.set(account: target_account) do
+      import.file.attach(io: File.open(export_tempfile.path), filename: "export.zip", content_type: "application/zip")
+    end
+    import.process
+    assert import.completed?
+
+    assert_equal original_counts.except(:users), capture_counts(target_account).except(:users)
+  ensure
+    export_tempfile&.close
+    export_tempfile&.unlink
+  end
+
   private
     def create_target_account
       account = Account.create!(name: "Import Target")
@@ -201,5 +240,16 @@ class Account::ImportTest < ActiveSupport::TestCase
         zip.get_output_stream("data/account.json") { |f| f.write(JSON.generate(account_data)) }
       end
       File.open(tempfile.path, "rb")
+    end
+
+    def capture_counts(account)
+      {
+        boards: account.boards.count,
+        columns: Column.joins(:board).where(boards: { account_id: account.id }).count,
+        cards: account.cards.count,
+        comments: Comment.joins(:card).where(cards: { account_id: account.id }).count,
+        tags: account.tags.count,
+        users: account.users.count
+      }
     end
 end

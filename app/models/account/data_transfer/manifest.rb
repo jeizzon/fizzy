@@ -20,10 +20,11 @@ class Account::DataTransfer::Manifest
       [
         Account::DataTransfer::AccountRecordSet.new(account),
         Account::DataTransfer::UserRecordSet.new(account),
+        Account::DataTransfer::RecordSet.new(account: account, model: ::User::Settings),
         Account::DataTransfer::RecordSet.new(account: account, model: ::Tag),
         Account::DataTransfer::RecordSet.new(account: account, model: ::Board),
         Account::DataTransfer::RecordSet.new(account: account, model: ::Column),
-        Account::DataTransfer::RecordSet.new(account: account, model: ::Entropy),
+        Account::DataTransfer::EntropyRecordSet.new(account),
         Account::DataTransfer::RecordSet.new(account: account, model: ::Board::Publication),
         Account::DataTransfer::RecordSet.new(account: account, model: ::Webhook),
         Account::DataTransfer::RecordSet.new(account: account, model: ::Access),
