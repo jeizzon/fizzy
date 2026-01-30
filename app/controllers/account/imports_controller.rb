@@ -2,6 +2,7 @@ class Account::ImportsController < ApplicationController
   layout "public"
 
   disallow_account_scope only: %i[ new create ]
+  allow_unauthorized_access only: :show
   before_action :set_import, only: %i[ show ]
 
   def new
