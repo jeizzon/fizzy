@@ -10,12 +10,11 @@ class ZipFile::Reader
     raise ArgumentError, "Cannot read directory entry: #{file_path}" if entry.filename.end_with?("/")
 
     extractor = entry.extractor_from(@io)
-    content = extractor.extract
 
     if block_given?
-      yield StringIO.new(content)
+      yield ZipFile::Reader::ExtractorIO.new(extractor)
     else
-      content
+      extractor.extract
     end
   end
 

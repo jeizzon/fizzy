@@ -26,16 +26,12 @@ class ZipFile::Writer
 
   def add_file(path, content = nil, compress: true)
     @entries << path
-    compression = compress ? :deflate : :stored
+    write_method = compress ? :write_deflated_file : :write_stored_file
 
     if block_given?
-      streamer.write_deflated_file(path) do |sink|
-        yield sink
-      end
+      streamer.public_send(write_method, path) { |sink| yield sink }
     else
-      streamer.write_deflated_file(path) do |sink|
-        sink.write(content)
-      end
+      streamer.public_send(write_method, path) { |sink| sink.write(content) }
     end
   end
 
