@@ -12,6 +12,16 @@ class Account::Import < ApplicationRecord
     ImportAccountDataJob.perform_later(self)
   end
 
+  def check(start: nil, callback: nil)
+    processing!
+
+    ZipFile.read_from(file.blob) do |zip|
+      Account::DataTransfer::Manifest.new(account).each_record_set(start: start) do |record_set, last_id|
+        record_set.check(from: zip, start: last_id, callback: callback)
+      end
+    end
+  end
+
   def process(start: nil, callback: nil)
     processing!
 
@@ -23,24 +33,18 @@ class Account::Import < ApplicationRecord
 
     mark_completed
   rescue => e
-    failed!
-    ImportMailer.failed(identity).deliver_later
+    mark_as_failed
     raise e
-  end
-
-  def check(start: nil, callback: nil)
-    processing!
-
-    ZipFile.read_from(file.blob) do |zip|
-      Account::DataTransfer::Manifest.new(account).each_record_set(start: start) do |record_set, last_id|
-        record_set.check(from: zip, start: last_id, callback: callback)
-      end
-    end
   end
 
   private
     def mark_completed
       completed!
       ImportMailer.completed(identity, account).deliver_later
+    end
+
+    def mark_as_failed
+      failed!
+      ImportMailer.failed(identity).deliver_later
     end
 end
