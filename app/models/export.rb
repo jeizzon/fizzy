@@ -20,10 +20,10 @@ class Export < ApplicationRecord
   def build
     processing!
 
-    zipfile = nil
+    tempfile = nil
     with_account_context do
-      zipfile = generate_zip { |zip| populate_zip(zip) }
-      file.attach io: File.open(zipfile.path), filename: "fizzy-export-#{id}.zip", content_type: "application/zip"
+      tempfile = ZipFile.create { |zip| populate_zip(zip) }
+      file.attach io: File.open(tempfile.path), filename: "fizzy-export-#{id}.zip", content_type: "application/zip"
       mark_completed
       ExportMailer.completed(self).deliver_later
     end
@@ -31,8 +31,8 @@ class Export < ApplicationRecord
     update!(status: :failed)
     raise e
   ensure
-    zipfile&.close
-    zipfile&.unlink
+    tempfile&.close
+    tempfile&.unlink
   end
 
   def mark_completed
@@ -52,27 +52,5 @@ class Export < ApplicationRecord
 
     def populate_zip(zip)
       raise NotImplementedError, "Subclasses must implement populate_zip"
-    end
-
-    def generate_zip
-      raise ArgumentError, "Block is required" unless block_given?
-
-      Tempfile.new([ "export", ".zip" ]).tap do |tempfile|
-        Zip::File.open(tempfile.path, create: true) do |zip|
-          yield zip
-        end
-      end
-    end
-
-    def add_file_to_zip(zip, path, content = nil, **options)
-      zip.get_output_stream(path, **options) do |f|
-        if block_given?
-          yield f
-        elsif content
-          f.write(content)
-        else
-          raise ArgumentError, "Either content or a block must be provided"
-        end
-      end
     end
 end

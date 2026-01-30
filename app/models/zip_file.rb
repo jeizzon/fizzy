@@ -1,4 +1,4 @@
-class Account::DataTransfer::ZipFile
+class ZipFile
   class << self
     def create
       raise ArgumentError, "No block given" unless block_given?

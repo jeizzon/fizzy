@@ -16,10 +16,10 @@ class User::DataExport < Export
     end
 
     def add_card_to_zip(zip, card)
-      add_file_to_zip(zip, "#{card.number}.json", card.export_json)
+      zip.add_file("#{card.number}.json", card.export_json)
 
       card.export_attachments.each do |attachment|
-        add_file_to_zip(zip, attachment[:path], compression_method: Zip::Entry::STORED) do |f|
+        zip.add_file(attachment[:path], compress: false) do |f|
           attachment[:blob].download { |chunk| f.write(chunk) }
         end
       rescue ActiveStorage::FileNotFoundError

@@ -11,7 +11,7 @@ class Account::ExportTest < ActiveSupport::TestCase
 
   test "build sets status to failed on error" do
     export = Account::Export.create!(account: Current.account, user: users(:david))
-    export.stubs(:generate_zip).raises(StandardError.new("Test error"))
+    ZipFile.stubs(:create).raises(StandardError.new("Test error"))
 
     assert_raises(StandardError) do
       export.build

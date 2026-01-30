@@ -16,7 +16,7 @@ class Account::Import < ApplicationRecord
     processing!
     ensure_downloaded
 
-    Account::DataTransfer::ZipFile.open(download_path) do |zip|
+    ZipFile.open(download_path) do |zip|
       Account::DataTransfer::Manifest.new(account).each_record_set(start: start) do |record_set, last_id|
         record_set.import(from: zip, start: last_id, callback: callback)
       end
@@ -33,7 +33,7 @@ class Account::Import < ApplicationRecord
     processing!
     ensure_downloaded
 
-    Account::DataTransfer::ZipFile.open(download_path) do |zip|
+    ZipFile.open(download_path) do |zip|
       Account::DataTransfer::Manifest.new(account).each_record_set(start: start) do |record_set, last_id|
         record_set.validate(from: zip, start: last_id, callback: callback)
       end
