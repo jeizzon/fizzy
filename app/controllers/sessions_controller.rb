@@ -10,7 +10,17 @@ class SessionsController < ApplicationController
 
   def create
     if identity = Identity.find_by(email_address: email_address)
-      sign_in identity
+      # Password auth if password provided and identity has one set
+      if params[:password].present? && identity.password_digest.present?
+        if identity.authenticate(params[:password])
+          start_new_session_for identity
+          redirect_to after_authentication_url
+        else
+          redirect_to new_session_path, alert: "Invalid password"
+        end
+      else
+        sign_in identity
+      end
     elsif Account.accepting_signups?
       sign_up
     else

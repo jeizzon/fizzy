@@ -10,6 +10,12 @@
       </label>
     </div>
 
+    <div class="flex align-center gap">
+      <label class="flex align-center gap input input--actor">
+        <%= form.password_field :password, class: "input txt-large full-width", autocomplete: "current-password", placeholder: "Password (optional)" %>
+      </label>
+    </div>
+
     <% if Account.accepting_signups? %>
       <p><strong>New here?</strong> <%= link_to "Sign up", new_signup_path %> to create an account. <strong>Already have an account?</strong> Enter your email and we’ll get you signed in.</p>
     <% else %>
