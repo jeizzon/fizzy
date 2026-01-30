@@ -24,7 +24,7 @@ class Account::Import < ApplicationRecord
     mark_completed
   rescue => e
     failed!
-    ImportMailer.failed(identity, account).deliver_later
+    ImportMailer.failed(identity).deliver_later
     raise e
   end
 
