@@ -1,5 +1,9 @@
 class User::DataExport < Export
   private
+    def filename
+      "fizzy-user-data-export-#{id}.zip"
+    end
+
     def populate_zip(zip)
       exportable_cards.find_each do |card|
         add_card_to_zip(zip, card)

@@ -21,7 +21,7 @@ class Export < ApplicationRecord
     processing!
 
     with_account_context do
-      ZipFile.create_for(file, filename: "fizzy-export-#{id}.zip") do |zip|
+      ZipFile.create_for(file, filename: filename) do |zip|
         populate_zip(zip)
       end
       mark_completed
@@ -41,6 +41,10 @@ class Export < ApplicationRecord
   end
 
   private
+    def filename
+      "fizzy-export-#{id}.zip"
+    end
+
     def with_account_context
       Current.set(account: account) do
         yield
