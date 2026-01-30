@@ -11,7 +11,7 @@ class Account::ExportTest < ActiveSupport::TestCase
 
   test "build sets status to failed on error" do
     export = Account::Export.create!(account: Current.account, user: users(:david))
-    ZipFile.stubs(:create).raises(StandardError.new("Test error"))
+    ZipFile.stubs(:create_for).raises(StandardError.new("Test error"))
 
     assert_raises(StandardError) do
       export.build
@@ -54,9 +54,9 @@ class Account::ExportTest < ActiveSupport::TestCase
 
     assert export.completed?
     export.file.open do |file|
-      Zip::File.open(file.path) do |zip|
-        assert zip.find_entry("storage/#{blob.key}"), "Expected blob file in zip"
-      end
+      reader = ZipKit::FileReader.read_zip_structure(io: file)
+      entry = reader.find { |e| e.filename == "storage/#{blob.key}" }
+      assert entry, "Expected blob file in zip"
     end
   end
 end

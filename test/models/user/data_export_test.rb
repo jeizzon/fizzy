@@ -42,21 +42,21 @@ class User::DataExportTest < ActiveSupport::TestCase
       export.file.download { |chunk| temp.write(chunk) }
       temp.rewind
 
-      Zip::File.open(temp.path) do |zip|
-        json_files = zip.glob("*.json")
-        assert json_files.any?, "Zip should contain at least one JSON file"
+      reader = ZipKit::FileReader.read_zip_structure(io: temp)
+      json_files = reader.select { |e| e.filename.end_with?(".json") }
+      assert json_files.any?, "Zip should contain at least one JSON file"
 
-        json_content = JSON.parse(zip.read(json_files.first.name))
-        assert json_content.key?("number")
-        assert json_content.key?("title")
-        assert json_content.key?("board")
-        assert json_content.key?("creator")
-        assert json_content["creator"].key?("id")
-        assert json_content["creator"].key?("name")
-        assert json_content["creator"].key?("email")
-        assert json_content.key?("description")
-        assert json_content.key?("comments")
-      end
+      extractor = json_files.first.extractor_from(temp)
+      json_content = JSON.parse(extractor.extract)
+      assert json_content.key?("number")
+      assert json_content.key?("title")
+      assert json_content.key?("board")
+      assert json_content.key?("creator")
+      assert json_content["creator"].key?("id")
+      assert json_content["creator"].key?("name")
+      assert json_content["creator"].key?("email")
+      assert json_content.key?("description")
+      assert json_content.key?("comments")
     end
   end
 

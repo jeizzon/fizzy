@@ -1,57 +1,80 @@
 class ZipFile
   class << self
-    def create
+    def create_for(attachment, filename:)
       raise ArgumentError, "No block given" unless block_given?
 
-      Tempfile.new([ "export", ".zip" ]).tap do |tempfile|
-        Zip::File.open(tempfile.path, create: true) do |zip|
-          yield new(zip)
+      reflection = attachment.record.class.reflect_on_attachment(attachment.name)
+      service_name = reflection.options[:service_name] || ActiveStorage::Blob.service.name
+      service = ActiveStorage::Blob.services.fetch(service_name)
+
+      if s3_service?(service)
+        create_for_s3(attachment, filename: filename, service: service) { |zip| yield zip }
+      else
+        create_for_disk(attachment, filename: filename) { |zip| yield zip }
+      end
+    end
+
+    def read_from(blob)
+      raise ArgumentError, "No block given" unless block_given?
+
+      if s3_service?(blob.service)
+        read_from_s3(blob) { |zip| yield zip }
+      else
+        read_from_disk(blob) { |zip| yield zip }
+      end
+    end
+
+    private
+      def s3_service?(service)
+        # The S3 service doesn't get loaded in development unless it's used
+        defined?(ActiveStorage::Service::S3Service) && service.is_a?(ActiveStorage::Service::S3Service)
+      end
+
+      def create_for_s3(attachment, filename:, service:)
+        blob = ActiveStorage::Blob.create_before_direct_upload!(
+          filename: filename,
+          content_type: "application/zip",
+          byte_size: 0,
+          checksum: "pending"
+        )
+
+        writer = Writer.new
+        service.upload(blob.key, writer.io) do |io|
+          writer.stream_to(io)
+          yield writer
+        end
+
+        blob.update!(byte_size: writer.byte_size, checksum: writer.checksum)
+        attachment.attach(blob)
+      end
+
+      def create_for_disk(attachment, filename:)
+        tempfile = Tempfile.new([ "export", ".zip" ])
+        tempfile.binmode
+
+        writer = Writer.new(tempfile)
+        yield writer
+        writer.close
+
+        tempfile.rewind
+        attachment.attach(io: tempfile, filename: filename, content_type: "application/zip")
+      ensure
+        tempfile&.close
+        tempfile&.unlink
+      end
+
+      def read_from_s3(blob)
+        url = blob.url(expires_in: 6.hour)
+        remote_io = ZipKit::RemoteIO.new(url)
+        reader = Reader.new(remote_io)
+        yield reader
+      end
+
+      def read_from_disk(blob)
+        blob.open do |file|
+          reader = Reader.new(file)
+          yield reader
         end
       end
-    end
-
-    def open(path)
-      raise ArgumentError, "No block given" unless block_given?
-
-      Zip::File.open(path.to_s) do |zip|
-        yield new(zip)
-      end
-    end
   end
-
-  def initialize(zip)
-    @zip = zip
-  end
-
-  def add_file(path, content = nil, compress: true, &block)
-    if block_given?
-      compression = compress ? nil : Zip::Entry::STORED
-      zip.get_output_stream(path, compression_method: compression, &block)
-    else
-      zip.get_output_stream(path) { |f| f.write(content) }
-    end
-  end
-
-  def glob(pattern)
-    zip.glob(pattern).map(&:name).sort
-  end
-
-  def read(file_path, &block)
-    entry = zip.find_entry(file_path)
-    raise ArgumentError, "File not found in zip: #{file_path}" unless entry
-    raise ArgumentError, "Cannot read directory entry: #{file_path}" if entry.directory?
-
-    if block_given?
-      yield entry.get_input_stream
-    else
-      entry.get_input_stream.read
-    end
-  end
-
-  def exists?(file_path)
-    zip.find_entry(file_path).present?
-  end
-
-  private
-    attr_reader :zip
 end
