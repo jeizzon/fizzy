@@ -32,7 +32,7 @@ class Account::DataTransfer::BlobFileRecordSet < Account::DataTransfer::RecordSe
       end
     end
 
-    def validate_record(file_path)
+    def check_record(file_path)
       key = File.basename(file_path)
 
       unless zip.exists?("data/active_storage_blobs/#{key}.json") || ActiveStorage::Blob.exists?(key: key, account: account)

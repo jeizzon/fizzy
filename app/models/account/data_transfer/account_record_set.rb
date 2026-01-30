@@ -36,7 +36,7 @@ class Account::DataTransfer::AccountRecordSet < Account::DataTransfer::RecordSet
       account.join_code.update(code: join_code_data.fetch("code"))
     end
 
-    def validate_record(file_path)
+    def check_record(file_path)
       data = load(file_path)
 
       unless (ACCOUNT_ATTRIBUTES - data.keys).empty?

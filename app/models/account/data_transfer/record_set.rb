@@ -33,13 +33,13 @@ class Account::DataTransfer::RecordSet
     end
   end
 
-  def validate(from:, start: nil, callback: nil)
+  def check(from:, start: nil, callback: nil)
     with_zip(from) do
       file_list = files
       file_list = skip_to(file_list, start) if start
 
       file_list.each do |file_path|
-        validate_record(file_path)
+        check_record(file_path)
         callback&.call(record_set: self, file: file_path)
       end
     end
@@ -77,7 +77,7 @@ class Account::DataTransfer::RecordSet
       model.insert_all!(batch_data)
     end
 
-    def validate_record(file_path)
+    def check_record(file_path)
       data = load(file_path)
       expected_id = File.basename(file_path, ".json")
 

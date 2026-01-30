@@ -4,8 +4,8 @@ class ImportAccountDataJob < ApplicationJob
   queue_as :backend
 
   def perform(import)
-    step :validate do
-      import.validate \
+    step :check do
+      import.check \
         start: step.cursor,
         callback: proc do |record_set:, file:|
           step.set!([ record_set.model.name, file ])

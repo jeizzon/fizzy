@@ -28,12 +28,12 @@ class Account::Import < ApplicationRecord
     raise e
   end
 
-  def validate(start: nil, callback: nil)
+  def check(start: nil, callback: nil)
     processing!
 
     ZipFile.read_from(file.blob) do |zip|
       Account::DataTransfer::Manifest.new(account).each_record_set(start: start) do |record_set, last_id|
-        record_set.validate(from: zip, start: last_id, callback: callback)
+        record_set.check(from: zip, start: last_id, callback: callback)
       end
     end
   end

@@ -24,9 +24,12 @@ class Account::ImportTest < ActiveSupport::TestCase
       import.file.attach(io: File.open(export_tempfile.path), filename: "export.zip", content_type: "application/zip")
     end
 
-    import.process
+    import.check
+    assert_not import.failed?
 
+    import.process
     assert import.completed?
+
     assert_equal source_account_digest, account_digest(target_account)
   ensure
     export_tempfile&.close
