@@ -90,17 +90,4 @@ class Card < ApplicationRecord
     def assign_number
       self.number ||= account.increment!(:cards_count).cards_count
     end
-
-    # Lammy integration: notify when card is triaged into "To Do" column
-    after_commit :notify_lammy, if: :should_notify_lammy?
-
-    def should_notify_lammy?
-      saved_change_to_column_id? && column&.name == "To Do"
-    end
-
-    def notify_lammy
-      Thread.new do
-        system("clawdbot cron wake --text 'FIZZY:#{number}:#{title.to_s.gsub("'", "")}'")
-      end
-    end
 end
