@@ -39,6 +39,11 @@ class Event < ApplicationRecord
 
   private
     def dispatch_webhooks
-      Event::WebhookDispatchJob.perform_later(self)
+      if Rails.env.local?
+        # Run synchronously in dev (no job queue)
+        Event::WebhookDispatchJob.new.perform(self)
+      else
+        Event::WebhookDispatchJob.perform_later(self)
+      end
     end
 end
