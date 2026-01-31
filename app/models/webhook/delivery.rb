@@ -87,7 +87,12 @@ class Webhook::Delivery < ApplicationRecord
 
     def resolved_ip
       return @resolved_ip if defined?(@resolved_ip)
-      @resolved_ip = SsrfProtection.resolve_public_ip(uri.host)
+      # Skip SSRF protection in development to allow localhost webhooks
+      @resolved_ip = if Rails.env.local?
+        Resolv.getaddress(uri.host) rescue "127.0.0.1"
+      else
+        SsrfProtection.resolve_public_ip(uri.host)
+      end
     end
 
     def uri
@@ -96,7 +101,7 @@ class Webhook::Delivery < ApplicationRecord
 
     def http
       Net::HTTP.new(uri.host, uri.port).tap do |http|
-        http.ipaddr = resolved_ip
+        http.ipaddr = resolved_ip unless Rails.env.local?
         http.use_ssl = (uri.scheme == "https")
         http.open_timeout = ENDPOINT_TIMEOUT
         http.read_timeout = ENDPOINT_TIMEOUT
