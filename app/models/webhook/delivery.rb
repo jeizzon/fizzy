@@ -27,7 +27,12 @@ class Webhook::Delivery < ApplicationRecord
   end
 
   def deliver_later
-    Webhook::DeliveryJob.perform_later(self)
+    if Rails.env.local?
+      # Deliver synchronously in development (no job queue needed)
+      deliver
+    else
+      Webhook::DeliveryJob.perform_later(self)
+    end
   end
 
   def deliver
